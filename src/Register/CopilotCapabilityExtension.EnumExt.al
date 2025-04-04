@@ -4,4 +4,8 @@ enumextension 50100 "Copilot Capability Extension" extends "Copilot Capability"
     {
         Caption = 'Extract Timesheet Entries from Text';
     }
+    value(50101; TimesheetSummarization)
+    {
+        Caption = 'Summarize Timesheet Entries';
+    }
 }

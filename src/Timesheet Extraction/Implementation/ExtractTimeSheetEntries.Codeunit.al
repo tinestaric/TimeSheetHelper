@@ -7,7 +7,7 @@ codeunit 50101 "Extract Time Sheet Entries"
     /// <param name="InputText">The description of the time spent.</param>
     /// <returns>The time sheet entries as a JSON array.</returns>
     procedure Extract(
-        GenerationBuffer: Record "Generation Buffer";
+        var GenerationBuffer: Record "Generation Buffer";
         var TimeSheetEntrySuggestion: Record "TimeSheet Entry Suggestion";
         InputText: Text
     )
