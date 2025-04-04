@@ -24,7 +24,7 @@ codeunit 50107 "Generate TimeSheet Summary"
         if CompletePromptTokenCount <= MaxInputTokens() then begin
             Completion := GenerateSummary(SystemPromptTxt, InputText);
             SaveGenerationHistory(GenerationBuffer, InputText);
-            SaveTimesheetSummary(Completion, TimesheetSummary);
+            SaveTimesheetSummary(Completion, TimesheetSummary, GenerationBuffer."Generation ID");
         end;
     end;
 
@@ -42,11 +42,15 @@ codeunit 50107 "Generate TimeSheet Summary"
 
         AzureOpenAI.SetAuthorization("AOAI Model Type"::"Chat Completions", GetEndpoint(), GetDeployment(), GetSecret());
         AzureOpenAI.SetCopilotCapability("Copilot Capability"::TimesheetSummarization);
+
         AOAIChatCompletionParams.SetMaxTokens(MaxOutputTokens());
         AOAIChatCompletionParams.SetTemperature(1);
+
         AOAIChatMessages.AddSystemMessage(SystemPromptTxt);
         AOAIChatMessages.AddUserMessage(TimeSheetEntries);
+
         AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);
+
         if AOAIOperationResponse.IsSuccess() then
             CompletionAnswerTxt := AOAIChatMessages.GetLastMessage()
         else
@@ -55,17 +59,8 @@ codeunit 50107 "Generate TimeSheet Summary"
         exit(CompletionAnswerTxt);
     end;
 
-    local procedure SaveTimesheetSummary(SummaryText: Text; var TimesheetSummary: Record "Timesheet Summary")
-    var
-        GenerationId: Integer;
+    local procedure SaveTimesheetSummary(SummaryText: Text; var TimesheetSummary: Record "Timesheet Summary"; GenerationId: Integer)
     begin
-        // Find the next generation ID
-        TimesheetSummary.Reset();
-        if TimesheetSummary.FindLast() then
-            GenerationId := TimesheetSummary.GenerationId + 1
-        else
-            GenerationId := 1;
-
         TimesheetSummary.Init();
         TimesheetSummary.GenerationId := GenerationId;
         TimesheetSummary.SetContent(SummaryText);

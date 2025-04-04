@@ -23,7 +23,7 @@ codeunit 50101 "Extract Time Sheet Entries"
         if CompletePromptTokenCount <= MaxInputTokens() then begin
             Completion := GenerateTimeEntries(SystemPromptTxt, InputText);
             SaveGenerationHistory(GenerationBuffer, InputText);
-            CreateTimeEntryProposals(Completion, TimeSheetEntrySuggestion);
+            CreateTimeSheetSuggestions(Completion, TimeSheetEntrySuggestion, GenerationBuffer."Generation ID");
         end;
     end;
 
@@ -41,39 +41,22 @@ codeunit 50101 "Extract Time Sheet Entries"
 
         AzureOpenAI.SetAuthorization("AOAI Model Type"::"Chat Completions", GetEndpoint(), GetDeployment(), GetSecret());
         AzureOpenAI.SetCopilotCapability("Copilot Capability"::TimesheetEntryExtraction);
+
         AOAIChatCompletionParams.SetMaxTokens(MaxOutputTokens());
         AOAIChatCompletionParams.SetTemperature(0);
         AOAIChatCompletionParams.SetJsonMode(true);
+
         AOAIChatMessages.AddSystemMessage(SystemPromptTxt);
         AOAIChatMessages.AddUserMessage(InputText);
+
         AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);
+
         if AOAIOperationResponse.IsSuccess() then
             CompletionAnswerTxt := AOAIChatMessages.GetLastMessage()
         else
             Error(AOAIOperationResponse.GetError());
 
         exit(CompletionAnswerTxt);
-    end;
-
-    local procedure CreateTimeEntryProposals(TimeEntriesJson: Text; var TimeSheetEntrySuggestion: Record "TimeSheet Entry Suggestion")
-    var
-        JsonObject: JsonObject;
-        TimeEntriesArray: JsonArray;
-        JsonToken: JsonToken;
-        GenerationId: Integer;
-    begin
-        // Find the next generation ID
-        TimeSheetEntrySuggestion.Reset();
-        if TimeSheetEntrySuggestion.FindLast() then
-            GenerationId := TimeSheetEntrySuggestion.GenerationId + 1
-        else
-            GenerationId := 1;
-
-        if JsonObject.ReadFrom(TimeEntriesJson) then
-            if JsonObject.Get('timeEntries', JsonToken) then
-                TimeEntriesArray := JsonToken.AsArray();
-
-        CreateTimeSheetSuggestions(TimeEntriesArray, TimeEntriesJson, GenerationId);
     end;
 
     local procedure SaveGenerationHistory(var GenerationId: Record "Generation Buffer"; InputText: Text)
@@ -83,18 +66,18 @@ codeunit 50101 "Extract Time Sheet Entries"
         GenerationId.Insert(true);
     end;
 
-    local procedure CreateTimeSheetSuggestions(TimeEntriesArray: JsonArray; TimeEntriesJson: Text; GenerationId: Integer)
+    local procedure CreateTimeSheetSuggestions(TimeEntriesJson: Text; var TimeSheetEntrySuggestion: Record "TimeSheet Entry Suggestion"; GenerationId: Integer)
     var
-        TimeSheetEntrySuggestion: Record "TimeSheet Entry Suggestion";
         TimeEntry: JsonToken;
+        JTimeEntries: JsonObject;
         EntryObject: JsonObject;
         LineNo: Integer;
         OutStream: OutStream;
     begin
-        // Start line numbers at 10000
         LineNo := 10000;
 
-        foreach TimeEntry in TimeEntriesArray do begin
+        JTimeEntries.ReadFrom(TimeEntriesJson);
+        foreach TimeEntry in JTimeEntries.GetArray('timeEntries', true) do begin
             EntryObject := TimeEntry.AsObject();
 
             // Create entry suggestion
@@ -187,7 +170,7 @@ Response format:
 
     local procedure GetDeployment(): Text
     begin
-        exit('gpt-35-turbo');
+        exit('gpt-4o');
     end;
 
     [NonDebuggable]
@@ -208,6 +191,6 @@ Response format:
 
     local procedure MaxModelTokens(): Integer
     begin
-        exit(4096); //GPT 3.5 Turbo
+        exit(4096); //GPT 4o
     end;
 }
