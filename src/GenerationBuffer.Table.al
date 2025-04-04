@@ -33,7 +33,6 @@ table 50105 "Generation Buffer"
     begin
         "Input Text".CreateOutStream(OutStream, TextEncoding::UTF8);
         OutStream.WriteText(InputText);
-        Modify();
     end;
 
     procedure GetInputText() Result: Text

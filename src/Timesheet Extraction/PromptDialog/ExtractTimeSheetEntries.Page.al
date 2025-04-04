@@ -71,7 +71,7 @@ page 50102 "Extract Time Sheet Entries"
     }
 
     var
-        TimeSheetNo: Code[20];
+        TimeSheet: Record "Time Sheet Header";
         TimeDescriptionInput: Text;
         GenerationIdInputText: Text;
 
@@ -92,7 +92,7 @@ page 50102 "Extract Time Sheet Entries"
         TimeEntriesGenerated: Record "TimeSheet Entry Suggestion";
         ExtractTimeSheetEntries: Codeunit "Extract Time Sheet Entries";
     begin
-        ExtractTimeSheetEntries.Extract(Rec, TimeEntriesGenerated, TimeDescriptionInput);
+        ExtractTimeSheetEntries.Extract(Rec, TimeEntriesGenerated, TimeDescriptionInput, TimeSheet);
         CurrPage.ProposalDetails.Page.Load(TimeEntriesGenerated);
     end;
 
@@ -102,11 +102,11 @@ page 50102 "Extract Time Sheet Entries"
         ExtractTimeSheetEntries: Codeunit "Extract Time Sheet Entries";
     begin
         CurrPage.ProposalDetails.Page.GetTempRecord(Rec."Generation ID", TimeEntriesGenerated);
-        ExtractTimeSheetEntries.ApplyProposedTimeEntries(TimeEntriesGenerated, TimeSheetNo);
+        ExtractTimeSheetEntries.ApplyProposedTimeEntries(TimeEntriesGenerated, TimeSheet."No.");
     end;
 
-    procedure SetTimeSheet(NewTimeSheetNo: Code[20])
+    procedure SetTimeSheet(NewTimeSheet: Record "Time Sheet Header")
     begin
-        TimeSheetNo := NewTimeSheetNo;
+        TimeSheet := NewTimeSheet;
     end;
 }
