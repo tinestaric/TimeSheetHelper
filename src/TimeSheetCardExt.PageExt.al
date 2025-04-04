@@ -2,7 +2,7 @@ pageextension 50101 "TimeSheet Card Ext" extends "Time Sheet Card"
 {
     actions
     {
-        addlast(Processing)
+        addlast(Prompting)
         {
             action(CopilotTimeEntry)
             {
@@ -15,7 +15,7 @@ pageextension 50101 "TimeSheet Card Ext" extends "Time Sheet Card"
                 var
                     ExtractTimeSheetEntries: Page "Extract Time Sheet Entries";
                 begin
-                    ExtractTimeSheetEntries.SetTimeSheet(Rec."No.");
+                    ExtractTimeSheetEntries.SetTimeSheet(Rec);
                     ExtractTimeSheetEntries.LookupMode := true;
                     if ExtractTimeSheetEntries.RunModal() = Action::LookupOK then
                         CurrPage.Update();

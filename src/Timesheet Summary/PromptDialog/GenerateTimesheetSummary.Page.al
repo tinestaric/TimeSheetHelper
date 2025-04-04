@@ -74,14 +74,14 @@ page 50107 "Generate Timesheet Summary"
 
     var
         TimeSheetLine: Record "Time Sheet Line";
+        TimesheetSummary: Record "Timesheet Summary";
         TimeSheetNo: Code[20];
         InstructionsInput: Text;
         SummaryContent: Text;
-        CurrentGenerationId: Integer;
 
     trigger OnAfterGetCurrRecord()
     begin
-        LoadSummary(CurrentGenerationId);
+        LoadSummary();
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -92,7 +92,6 @@ page 50107 "Generate Timesheet Summary"
 
     local procedure GenerateSummary()
     var
-        TimesheetSummary: Record "Timesheet Summary";
         GenerateTimeSheetSummary: Codeunit "Generate TimeSheet Summary";
     begin
         TimeSheetLine.SetRange("Time Sheet No.", TimeSheetNo);
@@ -102,17 +101,12 @@ page 50107 "Generate Timesheet Summary"
 
         GenerateTimeSheetSummary.Generate(Rec, TimesheetSummary, TimeSheetLine, InstructionsInput);
 
-        if TimesheetSummary.FindLast() then begin
-            CurrentGenerationId := TimesheetSummary.GenerationId;
-            LoadSummary(CurrentGenerationId);
-        end;
+        LoadSummary();
     end;
 
-    local procedure LoadSummary(GenerationId: Integer)
-    var
-        TimesheetSummary: Record "Timesheet Summary";
+    local procedure LoadSummary()
     begin
-        if TimesheetSummary.Get(GenerationId) then
+        if TimesheetSummary.Get(Rec."Generation ID") then
             SummaryContent := TimesheetSummary.GetContent()
         else
             SummaryContent := '';

@@ -9,7 +9,8 @@ codeunit 50101 "Extract Time Sheet Entries"
     procedure Extract(
         var GenerationBuffer: Record "Generation Buffer";
         var TimeSheetEntrySuggestion: Record "TimeSheet Entry Suggestion";
-        InputText: Text
+        InputText: Text;
+        TimeSheet: Record "Time Sheet Header"
     )
     var
         AOAIToken: Codeunit "AOAI Token";
@@ -17,7 +18,7 @@ codeunit 50101 "Extract Time Sheet Entries"
         Completion: Text;
         SystemPromptTxt: Text;
     begin
-        SystemPromptTxt := GetSystemPrompt();
+        SystemPromptTxt := GetSystemPrompt(TimeSheet);
 
         CompletePromptTokenCount := AOAIToken.GetGPT4TokenCount(SystemPromptTxt) + AOAIToken.GetGPT4TokenCount(InputText);
         if CompletePromptTokenCount <= MaxInputTokens() then begin
@@ -110,12 +111,17 @@ codeunit 50101 "Extract Time Sheet Entries"
     var
         TimeSheetLine: Record "Time Sheet Line";
         TimeSheetDetail: Record "Time Sheet Detail";
+        LineNoOffset: Integer;
     begin
+        TimeSheetLine.SetRange("Time Sheet No.", TimeSheetNo);
+        if TimeSheetLine.FindLast() then
+            LineNoOffset := TimeSheetLine."Line No.";
+
         if TimeSheetEntrySuggestion.FindSet() then
             repeat
                 TimeSheetLine.Init();
                 TimeSheetLine."Time Sheet No." := TimeSheetNo;
-                TimeSheetLine."Line No." := TimeSheetEntrySuggestion.LineNo;
+                TimeSheetLine."Line No." := TimeSheetEntrySuggestion.LineNo + LineNoOffset;
                 TimeSheetLine.Type := TimeSheetLine.Type::Job;
                 TimeSheetLine.Description := TimeSheetEntrySuggestion.Description;
                 TimeSheetLine."Job No." := TimeSheetEntrySuggestion."Project No.";
@@ -131,9 +137,9 @@ codeunit 50101 "Extract Time Sheet Entries"
             until TimeSheetEntrySuggestion.Next() = 0;
     end;
 
-    local procedure GetSystemPrompt(): Text
+    local procedure GetSystemPrompt(TimeSheet: Record "Time Sheet Header") Prompt: Text
     begin
-        exit(@'You are a business time tracking assistant.
+        Prompt := @'You are a business time tracking assistant.
 
 The user will provide an unstructured description of how they spent their time. Your task is to:
 1. Break down this description into discrete work activities
@@ -146,7 +152,9 @@ Follow these rules:
 - Use project names that would make sense in a business context
 - Identify appropriate tasks for each project
 - Categorize each entry (Meeting, Development, Analysis, etc.)
-- Use today''s date if no date is specified
+- All entries must have dates between ';
+        Prompt += Format(TimeSheet."Starting Date") + ' and ' + Format(TimeSheet."Ending Date") + '.';
+        Prompt += @' If no date is specified, use a date within this timeframe
 
 Response format:
 {
@@ -157,10 +165,10 @@ Response format:
       "project": "Project identifier/name",
       "task": "Specific task within the project",
       "hours": 1.5,
-      "date": "MM/DD/YYYY"
+      "date": "YYYY-MM-DD"
     }
   ]
-}');
+}';
     end;
 
     local procedure GetEndpoint(): Text
