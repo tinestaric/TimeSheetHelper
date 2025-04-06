@@ -146,7 +146,7 @@ The user may provide preferences for how the summary should be generated. If the
     [NonDebuggable]
     local procedure GetSecret(): Text
     begin
-        exit('REMOVED_SECRET');
+        exit('API_KEY_REQUIRED_HERE');
     end;
 
     local procedure MaxInputTokens(): Integer
