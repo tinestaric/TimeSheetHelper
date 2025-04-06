@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "Timsheet Helper",
+			"path": "App"
+		},
+		{
+			"name": "Test",
+			"path": "Test" 
+		}
+	],
+	"settings": {}
+}

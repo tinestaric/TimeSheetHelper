@@ -1,0 +1,40 @@
+{
+  "id": "8521391a-edc1-457d-94f2-0a64d7768bf4",
+  "name": "TimeSheetHelper-Tests",
+  "publisher": "StarReach Software",
+  "version": "1.0.0.0",
+  "brief": "Helps manage and track time sheets for employees with AI assistance",
+  "description": "TimeSheetHelper is an application that simplifies the process of creating, managing, and submitting time sheets. It provides an intuitive interface for tracking work hours, projects, and tasks. The app includes a Copilot feature that uses AI to convert unstructured descriptions into timesheet entries.",
+  "privacyStatement": "https://www.starreachsoftware.com/privacy",
+  "EULA": "https://www.starreachsoftware.com/eula",
+  "help": "https://www.starreachsoftware.com/timesheet-helper/help",
+  "url": "https://www.starreachsoftware.com/timesheet-helper",
+  "logo": "",
+  "dependencies": [
+    {
+      "id": "2156302A-872F-4568-BE0B-60968696F0D5",
+      "name": "AI Test Toolkit",
+      "publisher": "Microsoft",
+      "version": "26.0.30643.31063"
+    }
+  ],
+  "screenshots": [],
+  "platform": "1.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 50100,
+      "to": 50149
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "runtime": "15.0",
+  "features": [
+    "NoImplicitWith",
+    "NoPromotedActionProperties"
+  ]
+}
