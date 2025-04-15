@@ -143,8 +143,7 @@ The user may provide preferences for how the summary should be generated. If the
         exit('gpt-4o');
     end;
 
-    [NonDebuggable]
-    local procedure GetSecret(): Text
+    local procedure GetSecret(): SecretText
     begin
         exit('API_KEY_REQUIRED_HERE');
     end;

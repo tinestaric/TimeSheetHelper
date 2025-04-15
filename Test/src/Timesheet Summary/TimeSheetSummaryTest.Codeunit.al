@@ -47,25 +47,38 @@ codeunit 60100 "Time Sheet Summary Test"
 
     local procedure VerifySummaryContainsExpectedText(AITTestContext: Codeunit "AIT Test Context"; SummaryContent: Text)
     var
-        ExpectedTextToken: JsonToken;
-        ExpectedText: Text;
+        EvaluationResult: Record "Evaluation Result";
+        EvaluationPrompt: Codeunit "Evaluation Prompt";
         ExpectedTextArray: JsonArray;
+        ExpectedTerms: Text;
     begin
         // Get the array of expected text values from the test case
         ExpectedTextArray := AITTestContext.GetInput().Element('expectedSummaryContains').AsJsonToken().AsArray();
 
-        // Check that each expected text value is contained in the summary
-        foreach ExpectedTextToken in ExpectedTextArray do begin
-            ExpectedText := ExpectedTextToken.AsValue().AsText();
+        // Convert the expected text array to comma-separated text for the evaluation
+        ExpectedTerms := ConvertJsonArrayToText(ExpectedTextArray);
 
-            if not Contains(SummaryContent, ExpectedText) then
-                Error('Summary does not contain expected text: %1', ExpectedText);
-        end;
+        // Use the AI evaluation to check if the summary contains all expected terms
+        if not EvaluationPrompt.EvaluateWithResult(SummaryContent, ExpectedTerms, EvaluationResult) then
+            Error('Summary does not meet expectations: %1', EvaluationResult.Explanation);
     end;
 
-    local procedure Contains(SourceText: Text; SearchText: Text): Boolean
+    local procedure ConvertJsonArrayToText(JsonArray: JsonArray): Text
+    var
+        JsonToken: JsonToken;
+        ResultText: Text;
+        IsFirst: Boolean;
     begin
-        exit(StrPos(LowerCase(SourceText), LowerCase(SearchText)) > 0);
+        IsFirst := true;
+        foreach JsonToken in JsonArray do begin
+            if not IsFirst then
+                ResultText += ', ';
+
+            ResultText += JsonToken.AsValue().AsText();
+            IsFirst := false;
+        end;
+
+        exit(ResultText);
     end;
 
     local procedure HasCustomInstructions(AITTestContext: Codeunit "AIT Test Context"): Boolean

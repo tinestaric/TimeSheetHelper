@@ -181,8 +181,7 @@ Response format:
         exit('gpt-4o');
     end;
 
-    [NonDebuggable]
-    local procedure GetSecret(): Text
+    local procedure GetSecret(): SecretText
     begin
         exit('API_KEY_REQUIRED_HERE');
     end;
