@@ -11,15 +11,6 @@ page 50107 "Generate Timesheet Summary"
 
     layout
     {
-        area(PromptOptions)
-        {
-            field(SummaryStyles; SummaryStyles)
-            {
-                Caption = 'Summary Styles';
-                OptionCaption = 'Bullet Points,Short Paragraph,Long Paragraph';
-                ToolTip = 'Select the summary style for your summary';
-            }
-        }
         area(Prompt)
         {
             field(Instructions; InstructionsInput)
@@ -50,49 +41,6 @@ page 50107 "Generate Timesheet Summary"
 
     actions
     {
-        area(PromptGuide)
-        {
-            action(OnlyOneDay)
-            {
-                Caption = 'Only One Day';
-                ToolTip = 'Generate summary for only one day';
-
-                trigger OnAction()
-                begin
-                    InstructionsInput := 'Only summarize the entries for [Selected Day]';
-                end;
-            }
-            action(ProjectSpecific)
-            {
-                Caption = 'Project Specific';
-                ToolTip = 'Generate summary for a specific project';
-
-                trigger OnAction()
-                begin
-                    InstructionsInput := 'Only summarize the entries for [Selected Project]';
-                end;
-            }
-            action(Enthusiastic)
-            {
-                Caption = 'Enthusiastic';
-                ToolTip = 'Generate summary in an enthusiastic tone';
-
-                trigger OnAction()
-                begin
-                    InstructionsInput := 'Make it enthusiastic';
-                end;
-            }
-            action(EmphasizeOvertime)
-            {
-                Caption = 'Emphasize Overtime';
-                ToolTip = 'Generate summary in bullet points';
-
-                trigger OnAction()
-                begin
-                    InstructionsInput := 'Emphasize overtime in the summary';
-                end;
-            }
-        }
         area(SystemActions)
         {
             systemaction(Generate)
@@ -127,7 +75,6 @@ page 50107 "Generate Timesheet Summary"
     var
         TimeSheetLine: Record "Time Sheet Line";
         TimesheetSummary: Record "Timesheet Summary";
-        SummaryStyles: Option BulletPoints,ShortParagraph,LongParagraph;
         TimeSheetNo: Code[20];
         InstructionsInput: Text;
         SummaryContent: Text;
