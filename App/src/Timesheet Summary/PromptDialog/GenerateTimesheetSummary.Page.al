@@ -13,63 +13,17 @@ page 50107 "Generate Timesheet Summary"
     {
         area(Prompt)
         {
-            field(Instructions; InstructionsInput)
-            {
-                MultiLine = true;
-                ShowCaption = false;
-                InstructionalText = 'Specify any additional instructions for your summary';
-            }
+            // Properties to keep in mind: MultiLine, ShowCaption, InstructionalText
         }
-
         area(Content)
         {
-            group(Summary)
-            {
-                Caption = 'Generated Summary';
 
-                field(SummaryText; SummaryContent)
-                {
-                    Caption = '';
-                    Editable = false;
-                    MultiLine = true;
-                    ShowCaption = false;
-                    ToolTip = 'The generated summary of your timesheet entries';
-                }
-            }
         }
     }
 
     actions
     {
-        area(SystemActions)
-        {
-            systemaction(Generate)
-            {
-                Tooltip = 'Generate summary based on your timesheet entries';
-                trigger OnAction()
-                begin
-                    GenerateSummary();
-                end;
-            }
-            systemaction(Regenerate)
-            {
-                Caption = 'Regenerate';
-                Tooltip = 'Regenerate summary with your instructions';
-                trigger OnAction()
-                begin
-                    GenerateSummary();
-                end;
-            }
-            systemaction(Cancel)
-            {
-                ToolTip = 'Discard the summary and close the dialog';
-            }
-            systemaction(Ok)
-            {
-                Caption = 'Accept';
-                ToolTip = 'Accept the summary and close the dialog';
-            }
-        }
+        //TODO: Add Actions to generate, regenerate, cancel and accept (Ok)
     }
 
     var

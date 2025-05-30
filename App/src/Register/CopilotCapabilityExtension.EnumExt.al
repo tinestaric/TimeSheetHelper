@@ -1,7 +1,1 @@
-enumextension 50100 "Copilot Capability Extension" extends "Copilot Capability"
-{
-    value(50101; TimesheetSummarization)
-    {
-        Caption = 'Summarize Timesheet Entries';
-    }
-}
+// To register a capability, you need to extend the Copilot Capability Enum
