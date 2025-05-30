@@ -13,19 +13,14 @@ codeunit 50107 "Generate TimeSheet Summary"
         InputText: Text
     )
     var
-        AOAIToken: Codeunit "AOAI Token";
-        CompletePromptTokenCount: Integer;
         Completion: Text;
         SystemPromptTxt: Text;
     begin
         SystemPromptTxt := GetSystemPrompt(TimeSheetLine);
 
-        CompletePromptTokenCount := AOAIToken.GetGPT4TokenCount(SystemPromptTxt) + AOAIToken.GetGPT4TokenCount(InputText);
-        if CompletePromptTokenCount <= MaxInputTokens() then begin
-            Completion := GenerateSummary(SystemPromptTxt, InputText);
-            SaveGenerationHistory(GenerationBuffer, InputText);
-            SaveTimesheetSummary(Completion, TimesheetSummary, GenerationBuffer."Generation ID");
-        end;
+        Completion := GenerateSummary(SystemPromptTxt, InputText);
+        SaveGenerationHistory(GenerationBuffer, InputText);
+        SaveTimesheetSummary(Completion, TimesheetSummary, GenerationBuffer."Generation ID");
     end;
 
     [NonDebuggable]
@@ -43,7 +38,7 @@ codeunit 50107 "Generate TimeSheet Summary"
         AzureOpenAI.SetAuthorization("AOAI Model Type"::"Chat Completions", GetEndpoint(), GetDeployment(), GetSecret());
         AzureOpenAI.SetCopilotCapability("Copilot Capability"::TimesheetSummarization);
 
-        AOAIChatCompletionParams.SetMaxTokens(MaxOutputTokens());
+        AOAIChatCompletionParams.SetMaxTokens(2500);
         AOAIChatCompletionParams.SetTemperature(1);
 
         AOAIChatMessages.AddSystemMessage(SystemPromptTxt);
@@ -80,28 +75,17 @@ codeunit 50107 "Generate TimeSheet Summary"
     begin
         TimeSheetEntriesList := ListTimeSheetEntries(TimeSheetLine);
 
-        Prompt := @'You are a business time tracking assistant.
-
-Below is a list of time sheet entries:
+        Prompt := @'This is the first part
+of a multiline prompt.
 
 ';
-        Prompt += TimeSheetEntriesList;
+        Prompt += 'This is where I can add some more details';
         Prompt += @'
+And this is the second part of 
+a multiline prompt.
 
-Your task is to:
-1. Create a concise summary of the work completed
-2. Group activities by project when possible
-3. Highlight key accomplishments
-4. Format the summary in a professional style suitable for reporting to management
-
-Your summary should:
-- Be between 3-5 paragraphs
-- Avoid unnecessary details while capturing the essence of the work
-- Use professional business language
-- Be written in the first person
-- Include approximate total hours spent if that information is available
-
-The user may provide preferences for how the summary should be generated. If they do, please adjust your summary accordingly.';
+Replace this with the actual prompt
+';
 
         exit(Prompt);
     end;
@@ -150,20 +134,5 @@ The user may provide preferences for how the summary should be generated. If the
         CompanialAOAISecrets: Codeunit "Companial AOAI Secrets";
     begin
         exit(CompanialAOAISecrets.GetSecret());
-    end;
-
-    local procedure MaxInputTokens(): Integer
-    begin
-        exit(MaxModelTokens() - MaxOutputTokens());
-    end;
-
-    local procedure MaxOutputTokens(): Integer
-    begin
-        exit(1500);
-    end;
-
-    local procedure MaxModelTokens(): Integer
-    begin
-        exit(4000);
     end;
 }
