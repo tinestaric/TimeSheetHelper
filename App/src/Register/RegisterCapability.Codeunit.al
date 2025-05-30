@@ -15,9 +15,6 @@ codeunit 50100 "Register Capability"
         CopilotCapability: Codeunit "Copilot Capability";
         LearnMoreUrlTxt: Label 'https://example.com/CopilotToolkit', Locked = true;
     begin
-        if not CopilotCapability.IsCapabilityRegistered("Copilot Capability"::TimesheetEntryExtraction) then
-            CopilotCapability.RegisterCapability("Copilot Capability"::TimesheetEntryExtraction, LearnMoreUrlTxt);
-
         if not CopilotCapability.IsCapabilityRegistered("Copilot Capability"::TimesheetSummarization) then
             CopilotCapability.RegisterCapability("Copilot Capability"::TimesheetSummarization, LearnMoreUrlTxt);
     end;
