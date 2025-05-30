@@ -13,19 +13,14 @@ codeunit 50107 "Generate TimeSheet Summary"
         InputText: Text
     )
     var
-        AOAIToken: Codeunit "AOAI Token";
-        CompletePromptTokenCount: Integer;
         Completion: Text;
         SystemPromptTxt: Text;
     begin
         SystemPromptTxt := GetSystemPrompt(TimeSheetLine);
 
-        CompletePromptTokenCount := AOAIToken.GetGPT4TokenCount(SystemPromptTxt) + AOAIToken.GetGPT4TokenCount(InputText);
-        if CompletePromptTokenCount <= MaxInputTokens() then begin
-            Completion := GenerateSummary(SystemPromptTxt, InputText);
-            SaveGenerationHistory(GenerationBuffer, InputText);
-            SaveTimesheetSummary(Completion, TimesheetSummary, GenerationBuffer."Generation ID");
-        end;
+        Completion := GenerateSummary(SystemPromptTxt, InputText);
+        SaveGenerationHistory(GenerationBuffer, InputText);
+        SaveTimesheetSummary(Completion, TimesheetSummary, GenerationBuffer."Generation ID");
     end;
 
     [NonDebuggable]
@@ -43,7 +38,7 @@ codeunit 50107 "Generate TimeSheet Summary"
         AzureOpenAI.SetAuthorization("AOAI Model Type"::"Chat Completions", GetEndpoint(), GetDeployment(), GetSecret());
         AzureOpenAI.SetCopilotCapability("Copilot Capability"::TimesheetSummarization);
 
-        AOAIChatCompletionParams.SetMaxTokens(MaxOutputTokens());
+        AOAIChatCompletionParams.SetMaxTokens(2500);
         AOAIChatCompletionParams.SetTemperature(1);
 
         AOAIChatMessages.AddSystemMessage(SystemPromptTxt);
@@ -150,20 +145,5 @@ The user may provide preferences for how the summary should be generated. If the
         CompanialAOAISecrets: Codeunit "Companial AOAI Secrets";
     begin
         exit(CompanialAOAISecrets.GetSecret());
-    end;
-
-    local procedure MaxInputTokens(): Integer
-    begin
-        exit(MaxModelTokens() - MaxOutputTokens());
-    end;
-
-    local procedure MaxOutputTokens(): Integer
-    begin
-        exit(1500);
-    end;
-
-    local procedure MaxModelTokens(): Integer
-    begin
-        exit(4000);
     end;
 }

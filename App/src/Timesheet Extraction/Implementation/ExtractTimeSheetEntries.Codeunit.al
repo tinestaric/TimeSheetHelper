@@ -13,19 +13,14 @@ codeunit 50101 "Extract Time Sheet Entries"
         TimeSheet: Record "Time Sheet Header"
     )
     var
-        AOAIToken: Codeunit "AOAI Token";
-        CompletePromptTokenCount: Integer;
         Completion: Text;
         SystemPromptTxt: Text;
     begin
         SystemPromptTxt := GetSystemPrompt(TimeSheet);
 
-        CompletePromptTokenCount := AOAIToken.GetGPT4TokenCount(SystemPromptTxt) + AOAIToken.GetGPT4TokenCount(InputText);
-        if CompletePromptTokenCount <= MaxInputTokens() then begin
-            Completion := GenerateTimeEntries(SystemPromptTxt, InputText);
-            SaveGenerationHistory(GenerationBuffer, InputText);
-            CreateTimeSheetSuggestions(Completion, TimeSheetEntrySuggestion, GenerationBuffer."Generation ID");
-        end;
+        Completion := GenerateTimeEntries(SystemPromptTxt, InputText);
+        SaveGenerationHistory(GenerationBuffer, InputText);
+        CreateTimeSheetSuggestions(Completion, TimeSheetEntrySuggestion, GenerationBuffer."Generation ID");
     end;
 
     [NonDebuggable]
@@ -43,7 +38,7 @@ codeunit 50101 "Extract Time Sheet Entries"
         AzureOpenAI.SetAuthorization("AOAI Model Type"::"Chat Completions", GetEndpoint(), GetDeployment(), GetSecret());
         AzureOpenAI.SetCopilotCapability("Copilot Capability"::TimesheetEntryExtraction);
 
-        AOAIChatCompletionParams.SetMaxTokens(MaxOutputTokens());
+        AOAIChatCompletionParams.SetMaxTokens(2500);
         AOAIChatCompletionParams.SetTemperature(0);
         AOAIChatCompletionParams.SetJsonMode(true);
 
@@ -188,20 +183,5 @@ Response format:
         CompanialAOAISecrets: Codeunit "Companial AOAI Secrets";
     begin
         exit(CompanialAOAISecrets.GetSecret());
-    end;
-
-    local procedure MaxInputTokens(): Integer
-    begin
-        exit(MaxModelTokens() - MaxOutputTokens());
-    end;
-
-    local procedure MaxOutputTokens(): Integer
-    begin
-        exit(2500);
-    end;
-
-    local procedure MaxModelTokens(): Integer
-    begin
-        exit(4000);
     end;
 }
