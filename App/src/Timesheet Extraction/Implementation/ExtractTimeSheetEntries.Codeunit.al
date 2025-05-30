@@ -172,18 +172,22 @@ Response format:
     end;
 
     local procedure GetEndpoint(): Text
+    var
+        CompanialAOAISecrets: Codeunit "Companial AOAI Secrets";
     begin
-        exit('https://bcaihackathon.openai.azure.com/');
+        exit(CompanialAOAISecrets.GetEndpoint());
     end;
 
     local procedure GetDeployment(): Text
     begin
-        exit('gpt-4o');
+        exit(Format(Enum::"Companial AOAI Model"::"gpt-4o"));
     end;
 
     local procedure GetSecret(): SecretText
+    var
+        CompanialAOAISecrets: Codeunit "Companial AOAI Secrets";
     begin
-        exit('API_KEY_REQUIRED_HERE');
+        exit(CompanialAOAISecrets.GetSecret());
     end;
 
     local procedure MaxInputTokens(): Integer
@@ -198,6 +202,6 @@ Response format:
 
     local procedure MaxModelTokens(): Integer
     begin
-        exit(4096); //GPT 4o
+        exit(4000);
     end;
 }

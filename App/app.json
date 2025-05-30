@@ -1,7 +1,7 @@
 {
   "id": "f2eec341-edcd-4306-b484-6c31e0a091fc",
   "name": "TimeSheetHelper",
-  "publisher": "StarReach Software",
+  "publisher": "RedCarpet",
   "version": "1.0.0.0",
   "brief": "Helps manage and track time sheets for employees with AI assistance",
   "description": "TimeSheetHelper is an application that simplifies the process of creating, managing, and submitting time sheets. It provides an intuitive interface for tracking work hours, projects, and tasks. The app includes a Copilot feature that uses AI to convert unstructured descriptions into timesheet entries.",
@@ -10,7 +10,14 @@
   "help": "https://www.starreachsoftware.com/timesheet-helper/help",
   "url": "https://www.starreachsoftware.com/timesheet-helper",
   "logo": "",
-  "dependencies": [],
+  "dependencies": [
+    {
+      "id": "e70b652e-2c9e-4e32-af5f-594d026491b6",
+      "name": "SecretProvider",
+      "publisher": "StarReach",
+      "version": "1.0.0.0"
+    }
+  ],
   "screenshots": [],
   "platform": "1.0.0.0",
   "application": "26.0.0.0",
