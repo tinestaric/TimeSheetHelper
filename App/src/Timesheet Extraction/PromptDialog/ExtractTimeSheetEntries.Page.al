@@ -17,6 +17,7 @@ page 50102 "Extract Time Sheet Entries"
             {
                 ShowCaption = false;
                 MultiLine = true;
+                InstructionalText = 'Describe the time entries you want to create or paste entries from another source';
             }
         }
 
