@@ -20,6 +20,8 @@ codeunit 50107 "Generate TimeSheet Summary"
         SystemPromptTxt := GetSystemPrompt(TimeSheetLine);
 
         Completion := GenerateSummary(SystemPromptTxt, InputText);
+        //Only for study purposes with reasoning models
+        // Completion := GenerateSummaryWithoutToolkit(SystemPromptTxt, InputText); 
         SaveGenerationHistory(GenerationBuffer, InputText);
         SaveTimesheetSummary(Completion, TimesheetSummary, GenerationBuffer."Generation ID");
     end;
@@ -53,6 +55,31 @@ codeunit 50107 "Generate TimeSheet Summary"
             Error(AOAIOperationResponse.GetError());
 
         exit(CompletionAnswerTxt);
+    end;
+
+    [NonDebuggable]
+    local procedure GenerateSummaryWithoutToolkit(SystemPromptTxt: Text; TimeSheetEntries: Text): Text
+    var
+        CompanialAOAIRequest: Codeunit "Companial AOAI Request";
+        AOAIChatCompletionParams: Codeunit "AOAI Chat Completion Params";
+        ResponseText: Text;
+    begin
+        // Set up the chat completion parameters
+        AOAIChatCompletionParams.SetMaxTokens(2500);
+        AOAIChatCompletionParams.SetTemperature(1);
+
+        // Configure the request
+        CompanialAOAIRequest.SetSystemPrompt(SystemPromptTxt);
+        CompanialAOAIRequest.SetUserPrompt(TimeSheetEntries);
+        CompanialAOAIRequest.SetChatCompletionParams(AOAIChatCompletionParams);
+        CompanialAOAIRequest.SetModel(Enum::"Companial AOAI Model"::"o3");
+
+        // Send the request
+        if not CompanialAOAIRequest.Send(ResponseText) then
+            Error('Failed to generate summary: %1', CompanialAOAIRequest.GetErrorMessage());
+
+        // Return the parsed message content
+        exit(CompanialAOAIRequest.GetMessageContent());
     end;
 
     local procedure SaveTimesheetSummary(SummaryText: Text; var TimesheetSummary: Record "Timesheet Summary"; GenerationId: Integer)
