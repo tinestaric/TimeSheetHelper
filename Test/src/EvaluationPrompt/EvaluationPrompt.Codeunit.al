@@ -90,26 +90,15 @@ codeunit 60149 "Evaluation Prompt"
 
     local procedure GetSystemPrompt() Prompt: Text
     begin
-        Prompt := @'You are an AI evaluation assistant. Your job is to evaluate if a completion includes all expected terms or concepts.
-
-Follow these rules:
-1. Carefully analyze the completion to check if it addresses all the expected terms
-2. Look for semantic equivalents if exact terms are not present
-3. Be precise and thorough in your evaluation
-4. Return a JSON response with your evaluation
-
-Response format:
-{
-  "success": true/false,
-  "explanation": "A clear explanation of why the completion passed or failed, referencing which terms were missing if applicable"
-}';
+        //TODO: Come up with a good evaluation system prompt
+        Prompt := @'Come up with a good evaluation system prompt';
     end;
 
     local procedure GetUserPrompt(Completion: Text; ExpectedTerms: Text) Prompt: Text
     begin
-        Prompt := 'Completion to evaluate: ' + Completion + '\n\n';
-        Prompt += 'Expected terms (comma separated): ' + ExpectedTerms + '\n\n';
-        Prompt += 'Please evaluate if this completion adequately addresses all the expected terms.';
+        //TODO: Come up with a good evaluation user prompt
+        // It should include the completion and the expected terms and the instruction to evaluate the completion
+        Prompt := @'Come up with a good evaluation user prompt';
     end;
 
     local procedure GetEndpoint(): Text
