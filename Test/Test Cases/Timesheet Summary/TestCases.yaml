@@ -1,0 +1,254 @@
+tests:
+  - scenario: basic_single_project
+    description: Basic timesheet with single project entries
+    testName: Single Project Basic Summary
+    timeSheetEntries:
+      - type: Job
+        description: Software Development
+        workTypeCode: DEV
+        date: "2023-05-01"
+        quantity: 8
+      - type: Job
+        description: Software Development
+        workTypeCode: DEV
+        date: "2023-05-02"
+        quantity: 7.5
+      - type: Job
+        description: Software Development
+        workTypeCode: DEV
+        date: "2023-05-03"
+        quantity: 8
+    expectedSummaryContains:
+      - software development
+      - 23.5 hours
+
+  - scenario: multiple_projects
+    description: Timesheet with multiple projects
+    testName: Multiple Projects Summary
+    timeSheetEntries:
+      - type: Job
+        description: Project A - UI Development
+        workTypeCode: DEV
+        date: "2023-05-01"
+        quantity: 4
+      - type: Job
+        description: Project B - API Integration
+        workTypeCode: DEV
+        date: "2023-05-01"
+        quantity: 4
+      - type: Job
+        description: Project A - UI Testing
+        workTypeCode: TEST
+        date: "2023-05-02"
+        quantity: 3.5
+      - type: Job
+        description: Project B - Documentation
+        workTypeCode: DOC
+        date: "2023-05-02"
+        quantity: 4
+      - type: Job
+        description: Project C - Client Meeting
+        workTypeCode: MEET
+        date: "2023-05-03"
+        quantity: 2
+    expectedSummaryContains:
+      - Project A
+      - Project B
+      - Project C
+      - UI Development
+      - API Integration
+
+  - scenario: mixed_work_types
+    description: Timesheet with mixed work types
+    testName: Mixed Work Types Summary
+    timeSheetEntries:
+      - type: Job
+        description: Development
+        workTypeCode: DEV
+        date: "2023-05-01"
+        quantity: 4
+      - type: Job
+        description: Testing
+        workTypeCode: TEST
+        date: "2023-05-01"
+        quantity: 4
+      - type: Job
+        description: Client Meeting
+        workTypeCode: MEET
+        date: "2023-05-02"
+        quantity: 2
+      - type: Job
+        description: Documentation
+        workTypeCode: DOC
+        date: "2023-05-02"
+        quantity: 6
+      - type: Job
+        description: Bug Fixing
+        workTypeCode: BUG
+        date: "2023-05-03"
+        quantity: 8
+    expectedSummaryContains:
+      - development
+      - testing
+      - meeting
+      - documentation
+      - bug fixing
+
+  - scenario: empty_timesheet
+    description: Empty timesheet entries
+    testName: Empty Timesheet Summary
+    timeSheetEntries: []
+    expectedSummaryContains:
+      - no entries
+      - no work recorded
+
+  - scenario: with_custom_instructions
+    description: Timesheet with custom instructions
+    testName: Custom Instructions Summary
+    timeSheetEntries:
+      - type: Job
+        description: Feature Implementation
+        workTypeCode: DEV
+        date: "2023-05-01"
+        quantity: 8
+      - type: Job
+        description: Code Review
+        workTypeCode: REV
+        date: "2023-05-02"
+        quantity: 4
+      - type: Job
+        description: Team Meeting
+        workTypeCode: MEET
+        date: "2023-05-02"
+        quantity: 2
+      - type: Job
+        description: Documentation
+        workTypeCode: DOC
+        date: "2023-05-03"
+        quantity: 6
+    customInstructions: Please focus on technical achievements and format the summary as bullet points
+    expectedSummaryContains:
+      - feature implementation
+      - bullet
+      - technical
+
+  - scenario: long_timesheet
+    description: Timesheet with many entries over two weeks
+    testName: Long Timesheet Summary
+    timeSheetEntries:
+      - type: Job
+        description: Backend Development
+        workTypeCode: DEV
+        date: "2023-05-01"
+        quantity: 8
+      - type: Job
+        description: Backend Development
+        workTypeCode: DEV
+        date: "2023-05-02"
+        quantity: 8
+      - type: Job
+        description: API Testing
+        workTypeCode: TEST
+        date: "2023-05-03"
+        quantity: 8
+      - type: Job
+        description: Bug Fixing
+        workTypeCode: BUG
+        date: "2023-05-04"
+        quantity: 8
+      - type: Job
+        description: Client Meeting
+        workTypeCode: MEET
+        date: "2023-05-05"
+        quantity: 4
+      - type: Job
+        description: Documentation
+        workTypeCode: DOC
+        date: "2023-05-05"
+        quantity: 4
+      - type: Job
+        description: Frontend Development
+        workTypeCode: DEV
+        date: "2023-05-08"
+        quantity: 8
+      - type: Job
+        description: Frontend Development
+        workTypeCode: DEV
+        date: "2023-05-09"
+        quantity: 8
+      - type: Job
+        description: UI Testing
+        workTypeCode: TEST
+        date: "2023-05-10"
+        quantity: 8
+      - type: Job
+        description: Bug Fixing
+        workTypeCode: BUG
+        date: "2023-05-11"
+        quantity: 6
+      - type: Job
+        description: Team Meeting
+        workTypeCode: MEET
+        date: "2023-05-11"
+        quantity: 2
+      - type: Job
+        description: Code Review
+        workTypeCode: REV
+        date: "2023-05-12"
+        quantity: 8
+    expectedSummaryContains:
+      - backend
+      - frontend
+      - testing
+      - bug fixing
+      - two weeks
+
+  - scenario: varying_quantities
+    description: Timesheet with varying work quantities
+    testName: Varying Quantities Summary
+    timeSheetEntries:
+      - type: Job
+        description: Project Planning
+        workTypeCode: PLAN
+        date: "2023-05-01"
+        quantity: 2
+      - type: Job
+        description: Development
+        workTypeCode: DEV
+        date: "2023-05-01"
+        quantity: 6
+      - type: Job
+        description: Development
+        workTypeCode: DEV
+        date: "2023-05-02"
+        quantity: 4.5
+      - type: Job
+        description: Quick Meeting
+        workTypeCode: MEET
+        date: "2023-05-02"
+        quantity: 0.5
+      - type: Job
+        description: Testing
+        workTypeCode: TEST
+        date: "2023-05-02"
+        quantity: 3
+      - type: Job
+        description: Development
+        workTypeCode: DEV
+        date: "2023-05-03"
+        quantity: 2.5
+      - type: Job
+        description: Client Call
+        workTypeCode: MEET
+        date: "2023-05-03"
+        quantity: 1
+      - type: Job
+        description: Documentation
+        workTypeCode: DOC
+        date: "2023-05-03"
+        quantity: 4.5
+    expectedSummaryContains:
+      - development
+      - 13 hours
+      - meeting
+      - documentation
