@@ -1,12 +1,12 @@
 codeunit 50102 "Propose Time Sheet Entries"
 {
     /// <summary>
-    /// Proposes time sheet entries based on a historic time sheets.
+    /// Proposes time sheet entries based on historic time sheets using AI.
     /// </summary>
-    /// <param name="GenerationBuffer">The generation buffer to save the input text.</param>
-    /// <param name="InputText">The description of the time spent.</param>
-    /// <param name="TimeSheet">The time sheet header containing date constraints for the entries.</param>
-    /// <returns>The time sheet entries as a JSON array.</returns>
+    /// <param name="GenerationBuffer">Buffer record to store generation metadata and input text.</param>
+    /// <param name="TimeSheetEntrySuggestion">Record to store the generated time sheet entry suggestions.</param>
+    /// <param name="InputText">User's description of the time spent.</param>
+    /// <param name="TimeSheet">Time sheet header containing date constraints for the entries.</param>
     procedure Propose(
         var GenerationBuffer: Record "Generation Buffer";
         var TimeSheetEntrySuggestion: Record "TimeSheet Entry Suggestion";
@@ -31,7 +31,6 @@ codeunit 50102 "Propose Time Sheet Entries"
         AOAIOperationResponse: Codeunit "AOAI Operation Response";
         AOAIChatCompletionParams: Codeunit "AOAI Chat Completion Params";
         AOAIChatMessages: Codeunit "AOAI Chat Messages";
-        GetHistoricTimesheetTool: Codeunit "Get Historic Timesheet Tool";
         CompletionAnswerTxt: Text;
     begin
         if not AzureOpenAI.IsEnabled("Copilot Capability"::TimesheetHistoricProposal) then
@@ -40,18 +39,11 @@ codeunit 50102 "Propose Time Sheet Entries"
         AzureOpenAI.SetAuthorization("AOAI Model Type"::"Chat Completions", GetEndpoint(), GetDeployment(), GetSecret());
         AzureOpenAI.SetCopilotCapability("Copilot Capability"::TimesheetHistoricProposal);
 
-        AOAIChatCompletionParams.SetMaxTokens(2500);
-        AOAIChatCompletionParams.SetTemperature(0);
-        AOAIChatCompletionParams.SetJsonMode(true);
+        //TODO: Specify AOAI Chat Completion Params
 
-        AOAIChatMessages.AddSystemMessage(SystemPromptTxt);
-        AOAIChatMessages.AddUserMessage(InputText);
+        //TODO: Add Prompts
 
-        GetHistoricTimesheetTool.SetResourceNo(ResourceNo);
-
-        AOAIChatMessages.AddTool(GetHistoricTimesheetTool);
-        AOAIChatMessages.SetToolInvokePreference("AOAI Tool Invoke Preference"::Automatic);
-        AOAIChatMessages.SetToolChoice('auto');
+        //TODO: Setup a Tool, add it to the messages and set the invoke preference
 
         AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);
 
@@ -142,37 +134,28 @@ codeunit 50102 "Propose Time Sheet Entries"
 
     local procedure GetSystemPrompt(TimeSheet: Record "Time Sheet Header") Prompt: Text
     begin
-        Prompt := @'You are a business time tracking assistant with access to historic timesheet data.
+        // TODO: Modify this prompt to instruct the AI to use the retrieve_timesheets function when historic data is needed
+        Prompt := @'You are a business time tracking assistant.
 
 The user will provide a description of how they want to track their time, which may include:
 1. Unstructured descriptions of activities they performed
 2. Requests to suggest entries based on their historic timesheet patterns
 
-IMPORTANT: If the user mentions wanting suggestions based on past/previous/historic timesheet entries, patterns from specific time periods, or references like "past 3 weeks", "last month", "similar to last week", etc., you MUST:
-1. First call the retrieve_timesheets function to get their historic data
-2. Use that historic data to inform your suggestions
-3. Look for patterns in their past entries (projects, tasks, time allocations, descriptions)
-4. Generate suggestions that align with their historical work patterns
-
 Your task is to:
 1. Break down descriptions into discrete work activities
 2. Convert each activity into a properly formatted timesheet entry
-3. When historic data is available, use it to suggest realistic projects, tasks, and time allocations
+3. Generate suggestions that align with work patterns
 4. Return entries as a JSON array
 
 Follow these rules:
 - Split activities into logical units of work
 - Estimate reasonable hours for each activity (0.5 - 8 hours per activity)
-- Use project names and tasks that align with historic patterns when available
 - Use realistic project names that would make sense in a business context
 - Identify appropriate tasks for each project
 - Categorize each entry (Meeting, Development, Analysis, etc.)
 - All entries must have dates between ';
         Prompt += Format(TimeSheet."Starting Date") + ' and ' + Format(TimeSheet."Ending Date") + '.';
         Prompt += @' If no date is specified, use a date within this timeframe
-
-Available tools:
-- retrieve_timesheets: Use this when users reference past timesheet entries or patterns
 
 Response format:
 {
@@ -198,7 +181,7 @@ Response format:
 
     local procedure GetDeployment(): Text
     begin
-        exit(Format(Enum::"Companial AOAI Model"::"gpt-4o"));
+        exit(Format(Enum::"Companial AOAI Model"::o3));
     end;
 
     local procedure GetSecret(): SecretText

@@ -1,7 +1,6 @@
 codeunit 50103 "Get Historic Timesheet Tool" implements "AOAI Function"
 {
     var
-        FunctionNameLbl: Label 'retrieve_timesheets', Locked = true;
         ResourceNo: Code[20];
 
     procedure GetPrompt(): JsonObject
@@ -10,57 +9,44 @@ codeunit 50103 "Get Historic Timesheet Tool" implements "AOAI Function"
         FunctionDefinition: JsonObject;
         ParametersDefinition: JsonObject;
     begin
-        ParametersDefinition.ReadFrom(@'
-{
-    "type": "object",
-    "required": [
-      "end_date",
-      "start_date"
-    ],
-    "properties": {
-      "end_date": {
-        "type": "string",
-        "description": "The ending date for the timesheet retrieval in ISO 8601 format (YYYY-MM-DD)."
-      },
-      "start_date": {
-        "type": "string",
-        "description": "The starting date for the timesheet retrieval in ISO 8601 format (YYYY-MM-DD)."
-      }
-    },
-    "additionalProperties": false
-}');
-
-        FunctionDefinition.Add('name', FunctionNameLbl);
-        FunctionDefinition.Add('description', 'Takes a starting and ending date as input and retrieves timesheets for that period, returning them as a list of entries.');
-        FunctionDefinition.Add('strict', true);
-        FunctionDefinition.Add('parameters', ParametersDefinition);
-
-        ToolDefinition.Add('type', 'function');
-        ToolDefinition.Add('function', FunctionDefinition);
-
-        exit(ToolDefinition);
+        // {
+        //   "name": "name_of_the_function",
+        //   "description": "description_of_the_function",
+        //   "strict": true,
+        //   "parameters": {
+        //     "type": "object",
+        //     "required": [
+        //       "parameter1",
+        //       "parameter2",
+        //       "parameter3"
+        //     ],
+        //     "properties": {
+        //       "parameter1": {
+        //         "type": "string",
+        //         "description": "Description of parameter 1"
+        //       },
+        //       "parameter2": {
+        //         "type": "string",
+        //         "description": "Description of parameter 2"
+        //       },
+        //       "parameter3": {
+        //         "type": "string",
+        //         "description": "Description of parameter 3"
+        //       }
+        //     },
+        //     "additionalProperties": false
+        //   }
+        // }
     end;
 
     procedure Execute(Arguments: JsonObject): Variant
-    var
-        StartDate: Date;
-        EndDate: Date;
     begin
-        StartDate := Arguments.GetDate('start_date');
-        EndDate := Arguments.GetDate('end_date');
-
-        if StartDate = 0D then
-            Error('Start date is required');
-
-        if EndDate = 0D then
-            Error('End date is required');
-
-        exit(CollectHistoricTimeSheets(StartDate, EndDate));
+        //TODO: Take the arguments from the json object and execute some AL code with them
     end;
 
     procedure GetName(): Text
     begin
-        exit(FunctionNameLbl);
+        //TODO: Return the name of the function
     end;
 
     /// <summary>
