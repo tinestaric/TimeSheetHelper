@@ -11,16 +11,12 @@ codeunit 60100 "Time Sheet Summary Test"
         TimeSheetLine: Record "Time Sheet Line";
         AITTestContext: Codeunit "AIT Test Context";
         GenerateTimeSheetSummary: Codeunit "Generate TimeSheet Summary";
-        Name: Text;
         TimeSheetNo: Code[20];
         MinDate: Date;
         MaxDate: Date;
         CustomInstructions: Text;
         SummaryContent: Text;
     begin
-        // GIVEN: Parse test case data
-        Name := AITTestContext.GetInput().Element('testCase').ToText();
-
         // GIVEN: Find date range from entries
         FindEntryDateRange(AITTestContext, MinDate, MaxDate);
 

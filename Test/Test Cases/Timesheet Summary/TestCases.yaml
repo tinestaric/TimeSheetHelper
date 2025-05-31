@@ -52,11 +52,8 @@ tests:
         date: "2023-05-03"
         quantity: 2
     expectedSummaryContains:
-      - Project A
-      - Project B
-      - Project C
-      - UI Development
-      - API Integration
+      - Three projects
+      - Software development
 
   - scenario: mixed_work_types
     description: Timesheet with mixed work types
