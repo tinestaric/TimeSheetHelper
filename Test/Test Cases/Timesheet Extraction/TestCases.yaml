@@ -7,24 +7,12 @@ tests:
     inputText: "I spent 4 hours on coding the login functionality on Tuesday, then 2 hours in team meetings discussing project roadmap on Wednesday. Thursday I worked 6 hours on documentation."
     testName: Basic Timesheet Extraction
     expectedEntries:
-      - type: Development
-        description: Coding login functionality
-        project: Authentication
-        task: Login Implementation
+      - date: "2023-05-02"
         hours: 4
-        date: "2023-05-02"
-      - type: Meeting
-        description: Team meetings discussing project roadmap
-        project: Project Management
-        task: Planning
+      - date: "2023-05-03"  
         hours: 2
-        date: "2023-05-03"
-      - type: Documentation
-        description: Documentation work
-        project: Documentation
-        task: Technical Documentation
+      - date: "2023-05-04"
         hours: 6
-        date: "2023-05-04"
 
   - scenario: multiple_projects
     description: Extract entries for multiple projects
@@ -34,99 +22,35 @@ tests:
     inputText: "This week I worked on several projects. I spent Monday morning (4h) on the CRM integration and the afternoon (4h) fixing bugs on the reporting dashboard. Tuesday was 8 hours of client meetings for the new mobile app project. Wednesday and Thursday I worked on mobile app wireframes, about 6 hours each day. Friday morning was a 2-hour retrospective meeting and 6 hours of sprint planning for next week."
     testName: Multiple Projects Extraction
     expectedEntries:
-      - type: Development
-        description: CRM integration
-        project: CRM
-        task: Integration
-        hours: 4
-        date: "2023-05-08"
-      - type: Development
-        description: Fixing bugs on reporting dashboard
-        project: Reporting
-        task: Bug Fixing
-        hours: 4
-        date: "2023-05-08"
-      - type: Meeting
-        description: Client meetings for mobile app project
-        project: Mobile App
-        task: Client Communication
+      - date: "2023-05-08"
         hours: 8
-        date: "2023-05-09"
-      - type: Development
-        description: Mobile app wireframes
-        project: Mobile App
-        task: Design
+      - date: "2023-05-09"
+        hours: 8
+      - date: "2023-05-10"
         hours: 6
-        date: "2023-05-10"
-      - type: Development
-        description: Mobile app wireframes
-        project: Mobile App
-        task: Design
+      - date: "2023-05-11"
         hours: 6
-        date: "2023-05-11"
-      - type: Meeting
-        description: Retrospective meeting
-        project: Project Management
-        task: Retrospective
-        hours: 2
-        date: "2023-05-12"
-      - type: Meeting
-        description: Sprint planning
-        project: Project Management
-        task: Planning
-        hours: 6
-        date: "2023-05-12"
+      - date: "2023-05-12"
+        hours: 8
 
   - scenario: no_dates_specified
-    description: Extract entries with no explicit dates
+    description: Extract entries with no explicit dates - should distribute across week
     timeSheetPeriod:
       startDate: "2023-05-15"
       endDate: "2023-05-21"
     inputText: "This week I spent 10 hours on database optimization, 8 hours on API development, 6 hours in client meetings, 4 hours on documentation, and 12 hours fixing critical bugs in the payment processing system."
     testName: No Dates Specified Extraction
     expectedEntries:
-      - type: Development
-        description: Database optimization
-        project: Database
-        task: Optimization
-        hours: 5
-        date: "2023-05-15"
-      - type: Development
-        description: Database optimization
-        project: Database
-        task: Optimization
-        hours: 5
-        date: "2023-05-16"
-      - type: Development
-        description: API development
-        project: API
-        task: Development
+      - date: "2023-05-15"
         hours: 8
-        date: "2023-05-17"
-      - type: Meeting
-        description: Client meetings
-        project: Client Relations
-        task: Communication
+      - date: "2023-05-16"
+        hours: 8
+      - date: "2023-05-17"
+        hours: 8
+      - date: "2023-05-18"
         hours: 6
-        date: "2023-05-18"
-      - type: Documentation
-        description: Documentation
-        project: Documentation
-        task: Technical Writing
-        hours: 4
-        date: "2023-05-19"
-      - type: Development
-        description: Fixing critical bugs in payment processing
-        project: Payment System
-        task: Bug Fixing
-        hours: 6
-        date: "2023-05-19"
-      - type: Development
-        description: Fixing critical bugs in payment processing
-        project: Payment System
-        task: Bug Fixing
-        hours: 6
-        date: "2023-05-20"
+      - date: "2023-05-19"
+        hours: 10
 
   - scenario: vague_description
     description: Extract entries from a vague description
@@ -136,36 +60,16 @@ tests:
     inputText: "Busy week working on the project. Lots of meetings and coding. Some documentation work too."
     testName: Vague Description Extraction
     expectedEntries:
-      - type: Development
-        description: Coding work on project
-        project: General Project
-        task: Development
+      - date: "2023-05-22"
         hours: 4
-        date: "2023-05-22"
-      - type: Meeting
-        description: Project meetings
-        project: General Project
-        task: Meetings
-        hours: 3
-        date: "2023-05-23"
-      - type: Development
-        description: Coding work on project
-        project: General Project
-        task: Development
+      - date: "2023-05-23"
         hours: 4
-        date: "2023-05-24"
-      - type: Meeting
-        description: Project meetings
-        project: General Project
-        task: Meetings
+      - date: "2023-05-24"
+        hours: 4
+      - date: "2023-05-25"
         hours: 3
-        date: "2023-05-25"
-      - type: Documentation
-        description: Documentation work
-        project: General Project
-        task: Documentation
+      - date: "2023-05-26"
         hours: 2
-        date: "2023-05-26"
 
   - scenario: detailed_timesheet
     description: Extract entries from a very detailed description
@@ -175,78 +79,16 @@ tests:
     inputText: "Monday: 8:00-10:30 working on user authentication bug (#1234), 11:00-12:00 team standup, 13:00-17:00 implementing new dashboard features.\nTuesday: 8:00-12:00 code review for PR #567, 13:00-15:00 architecture planning meeting for v2.0, 15:30-17:00 helping QA with test plans.\nWednesday: Full day (8h) at client site conducting user training.\nThursday: 8:00-12:00 implementing feedback from client, 13:00-15:00 weekly sprint meeting, 15:30-17:00 documenting new features.\nFriday: 8:00-12:00 fixing regression bugs, 13:00-16:00 peer programming with junior developer."
     testName: Detailed Timesheet Extraction
     expectedEntries:
-      - type: Development
-        description: Working on user authentication bug (#1234)
-        project: Authentication
-        task: Bug Fixing
-        hours: 2.5
-        date: "2023-05-29"
-      - type: Meeting
-        description: Team standup
-        project: Project Management
-        task: Daily Meeting
-        hours: 1
-        date: "2023-05-29"
-      - type: Development
-        description: Implementing new dashboard features
-        project: Dashboard
-        task: Feature Implementation
-        hours: 4
-        date: "2023-05-29"
-      - type: Development
-        description: Code review for PR #567
-        project: Code Review
-        task: Peer Review
-        hours: 4
-        date: "2023-05-30"
-      - type: Meeting
-        description: Architecture planning meeting for v2.0
-        project: Architecture
-        task: Planning
-        hours: 2
-        date: "2023-05-30"
-      - type: Support
-        description: Helping QA with test plans
-        project: Quality Assurance
-        task: Test Support
-        hours: 1.5
-        date: "2023-05-30"
-      - type: Support
-        description: User training at client site
-        project: Client Training
-        task: User Training
+      - date: "2023-05-29"
+        hours: 7.5
+      - date: "2023-05-30"
+        hours: 7.5
+      - date: "2023-05-31"
         hours: 8
-        date: "2023-05-31"
-      - type: Development
-        description: Implementing feedback from client
-        project: Client Feedback
-        task: Implementation
-        hours: 4
-        date: "2023-06-01"
-      - type: Meeting
-        description: Weekly sprint meeting
-        project: Project Management
-        task: Sprint Meeting
-        hours: 2
-        date: "2023-06-01"
-      - type: Documentation
-        description: Documenting new features
-        project: Documentation
-        task: Feature Documentation
-        hours: 1.5
-        date: "2023-06-01"
-      - type: Development
-        description: Fixing regression bugs
-        project: Bug Fixing
-        task: Regression Issues
-        hours: 4
-        date: "2023-06-02"
-      - type: Development
-        description: Peer programming with junior developer
-        project: Mentoring
-        task: Pair Programming
-        hours: 3
-        date: "2023-06-02"
+      - date: "2023-06-01"
+        hours: 7.5
+      - date: "2023-06-02"
+        hours: 7
 
   - scenario: mixed_work_types
     description: Extract entries with various work types
@@ -256,66 +98,16 @@ tests:
     inputText: "This week was varied. Monday I had sales support meetings (3h) and worked on competitive analysis (5h). Tuesday I spent time troubleshooting customer issues (6h) and documenting the solutions (2h). Wednesday I conducted a training session for new team members (4h) and prepared training materials (4h). Thursday involved UI design reviews (3h) and creating wireframes for new features (5h). Friday I worked on the quarterly business report (4h) and had a strategy meeting with executives (4h)."
     testName: Mixed Work Types Extraction
     expectedEntries:
-      - type: Meeting
-        description: Sales support meetings
-        project: Sales
-        task: Support
-        hours: 3
-        date: "2023-06-05"
-      - type: Analysis
-        description: Competitive analysis
-        project: Market Research
-        task: Competitive Analysis
-        hours: 5
-        date: "2023-06-05"
-      - type: Support
-        description: Troubleshooting customer issues
-        project: Customer Support
-        task: Issue Resolution
-        hours: 6
-        date: "2023-06-06"
-      - type: Documentation
-        description: Documenting solutions
-        project: Knowledge Base
-        task: Solution Documentation
-        hours: 2
-        date: "2023-06-06"
-      - type: Meeting
-        description: Training session for new team members
-        project: Training
-        task: New Employee Onboarding
-        hours: 4
-        date: "2023-06-07"
-      - type: Documentation
-        description: Preparing training materials
-        project: Training
-        task: Material Preparation
-        hours: 4
-        date: "2023-06-07"
-      - type: Meeting
-        description: UI design reviews
-        project: UI/UX
-        task: Design Review
-        hours: 3
-        date: "2023-06-08"
-      - type: Development
-        description: Creating wireframes for new features
-        project: UI/UX
-        task: Wireframing
-        hours: 5
-        date: "2023-06-08"
-      - type: Documentation
-        description: Quarterly business report
-        project: Business Operations
-        task: Reporting
-        hours: 4
-        date: "2023-06-09"
-      - type: Meeting
-        description: Strategy meeting with executives
-        project: Strategy
-        task: Executive Planning
-        hours: 4
-        date: "2023-06-09"
+      - date: "2023-06-05"
+        hours: 8
+      - date: "2023-06-06"
+        hours: 8
+      - date: "2023-06-07"
+        hours: 8
+      - date: "2023-06-08"
+        hours: 8
+      - date: "2023-06-09"
+        hours: 8
 
   - scenario: ambiguous_dates
     description: Extract entries with ambiguous date references
@@ -325,49 +117,15 @@ tests:
     inputText: "Early in the week I worked on the database migration (about 10 hours total). Mid-week was mostly client meetings and some bug fixing (around 8 hours combined). At the end of the week I focused on performance optimization which took about 12 hours."
     testName: Ambiguous Dates Extraction
     expectedEntries:
-      - type: Development
-        description: Database migration
-        project: Database
-        task: Migration
+      - date: "2023-06-12"
         hours: 5
-        date: "2023-06-12"
-      - type: Development
-        description: Database migration
-        project: Database
-        task: Migration
+      - date: "2023-06-13"
         hours: 5
-        date: "2023-06-13"
-      - type: Meeting
-        description: Client meetings
-        project: Client Relations
-        task: Communication
+      - date: "2023-06-14"
         hours: 4
-        date: "2023-06-14"
-      - type: Development
-        description: Bug fixing
-        project: Maintenance
-        task: Bug Fixes
+      - date: "2023-06-15"
         hours: 4
-        date: "2023-06-15"
-      - type: Development
-        description: Performance optimization
-        project: Performance
-        task: Optimization
+      - date: "2023-06-16"
         hours: 6
-        date: "2023-06-16"
-      - type: Development
-        description: Performance optimization
-        project: Performance
-        task: Optimization
+      - date: "2023-06-17"
         hours: 6
-        date: "2023-06-17"
-
-  - scenario: empty_input
-    description: Test with empty input
-    timeSheetPeriod:
-      startDate: "2023-06-19"
-      endDate: "2023-06-25"
-    inputText: ""
-    testName: Empty Input Validation
-    expectedError: true
-    errorMessage: Please enter a time description

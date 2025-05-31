@@ -46,7 +46,7 @@ codeunit 60149 "Evaluation Prompt"
         AzureOpenAI.SetAuthorization("AOAI Model Type"::"Chat Completions", GetEndpoint(), GetDeployment(), GetSecret());
         AzureOpenAI.SetCopilotCapability("Copilot Capability"::ContentEvaluation);
 
-        AOAIChatCompletionParams.SetMaxTokens(MaxOutputTokens());
+        AOAIChatCompletionParams.SetMaxTokens(2500);
         AOAIChatCompletionParams.SetTemperature(0);
         AOAIChatCompletionParams.SetJsonMode(true);
 
@@ -113,22 +113,21 @@ Response format:
     end;
 
     local procedure GetEndpoint(): Text
+    var
+        CompanialAOAISecrets: Codeunit "Companial AOAI Secrets";
     begin
-        exit('https://bcaihackathon.openai.azure.com/');
+        exit(CompanialAOAISecrets.GetEndpoint());
     end;
 
     local procedure GetDeployment(): Text
     begin
-        exit('gpt-4o');
+        exit(Format(Enum::"Companial AOAI Model"::"gpt-4o"));
     end;
 
     local procedure GetSecret(): SecretText
+    var
+        CompanialAOAISecrets: Codeunit "Companial AOAI Secrets";
     begin
-        exit(SecretStrSubstNo('API_KEY_REQUIRED_HERE'));
-    end;
-
-    local procedure MaxOutputTokens(): Integer
-    begin
-        exit(1000);
+        exit(CompanialAOAISecrets.GetSecret());
     end;
 }

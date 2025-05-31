@@ -1,7 +1,7 @@
 {
   "id": "8521391a-edc1-457d-94f2-0a64d7768bf4",
   "name": "TimeSheetHelper-Tests",
-  "publisher": "StarReach Software",
+  "publisher": "RedCarpet",
   "version": "1.0.0.0",
   "brief": "Test application for TimeSheetHelper",
   "description": "This application contains automated tests for the TimeSheetHelper app. It validates the functionality of timesheet entry extraction, summary generation, and other AI-assisted features.",
@@ -20,9 +20,15 @@
     {
       "id": "f2eec341-edcd-4306-b484-6c31e0a091fc",
       "name": "TimeSheetHelper",
-      "publisher": "StarReach Software",
+      "publisher": "RedCarpet",
       "version": "1.0.0.0"
-    }
+    },
+    {
+      "id": "e70b652e-2c9e-4e32-af5f-594d026491b6",
+      "name": "SecretProvider",
+      "publisher": "StarReach",
+      "version": "1.0.0.0"
+    }    
   ],
   "screenshots": [],
   "platform": "1.0.0.0",
@@ -44,6 +50,6 @@
     "NoPromotedActionProperties"
   ],
   "resourceFolders": [
-    "Test Cases/out"
+    "Test Cases"
   ]
 }

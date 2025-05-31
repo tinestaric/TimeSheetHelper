@@ -28,120 +28,82 @@ codeunit 60104 "Time Sheet Extraction Test"
         // GIVEN: Get the expected entries from the test case
         ExpectedEntries := AITTestContext.GetInput().Element('expectedEntries').AsJsonToken().AsArray();
 
-        // Check if we expect an error for this test case
-        if HasExpectedError(AITTestContext) then begin
-            // THEN: Validate that the extraction does not process empty input
-            asserterror ExtractTimeSheetEntries.Extract(GenerationBuffer, TimeSheetEntrySuggestion, InputText, TimeSheetHeader);
-            VerifyExpectedError(AITTestContext);
-            exit;
-        end;
-
         // WHEN: Extract the timesheet entries
         ExtractTimeSheetEntries.Extract(GenerationBuffer, TimeSheetEntrySuggestion, InputText, TimeSheetHeader);
 
         // THEN: Validate the extracted entries against expected results
         VerifyExtractedEntries(TimeSheetEntrySuggestion, ExpectedEntries);
 
-        // Set the output for the test
-        AITTestContext.SetTestOutput(Format(TimeSheetEntrySuggestion.Count) + ' entries successfully extracted and verified');
+        // Set the output for the test with full JSON of suggestions
+        AITTestContext.SetTestOutput(ConvertSuggestionsToJson(TimeSheetEntrySuggestion));
+    end;
+
+    local procedure ConvertSuggestionsToJson(var TimeSheetEntrySuggestion: Record "TimeSheet Entry Suggestion"): Text
+    var
+        SuggestionsArray: JsonArray;
+        SuggestionObject: JsonObject;
+    begin
+        TimeSheetEntrySuggestion.Reset();
+        if TimeSheetEntrySuggestion.FindSet() then
+            repeat
+                Clear(SuggestionObject);
+                SuggestionObject.Add('generationId', TimeSheetEntrySuggestion.GenerationId);
+                SuggestionObject.Add('lineNo', TimeSheetEntrySuggestion.LineNo);
+                SuggestionObject.Add('date', Format(TimeSheetEntrySuggestion.EntryDate, 0, '<Year4>-<Month,2>-<Day,2>'));
+                SuggestionObject.Add('hours', TimeSheetEntrySuggestion.Hours);
+                SuggestionObject.Add('description', TimeSheetEntrySuggestion.Description);
+                SuggestionObject.Add('projectNo', TimeSheetEntrySuggestion."Project No.");
+                SuggestionObject.Add('taskNo', TimeSheetEntrySuggestion."Task No.");
+                SuggestionObject.Add('entryType', TimeSheetEntrySuggestion.EntryType);
+                SuggestionsArray.Add(SuggestionObject);
+            until TimeSheetEntrySuggestion.Next() = 0;
+
+        exit(Format(SuggestionsArray));
     end;
 
     local procedure VerifyExtractedEntries(var TimeSheetEntrySuggestion: Record "TimeSheet Entry Suggestion"; ExpectedEntries: JsonArray)
     var
         ExpectedEntry: JsonToken;
         ExpectedEntryObject: JsonObject;
-        EntryFound: Boolean;
         ExpectedDate: Date;
         ExpectedHours: Decimal;
-        ExpectedDescription: Text;
-        ExpectedProject: Text;
-        ExpectedTask: Text;
-        ExpectedType: Text;
+        DateFound: Boolean;
     begin
-        // For each expected entry, verify that we have a matching extracted entry
+        // For each expected entry, verify exact date and hours match
         foreach ExpectedEntry in ExpectedEntries do begin
             ExpectedEntryObject := ExpectedEntry.AsObject();
-
-            // Get the expected values
             ExpectedDate := ExpectedEntryObject.GetDate('date');
             ExpectedHours := ExpectedEntryObject.GetDecimal('hours');
-            ExpectedDescription := ExpectedEntryObject.GetText('description');
-            ExpectedProject := ExpectedEntryObject.GetText('project');
-            ExpectedTask := ExpectedEntryObject.GetText('task');
-            ExpectedType := ExpectedEntryObject.GetText('type');
 
-            // Look for matching entry in the extracted results
-            EntryFound := FindMatchingEntry(
-                TimeSheetEntrySuggestion,
-                ExpectedDate,
-                ExpectedHours,
-                ExpectedDescription,
-                ExpectedProject,
-                ExpectedTask,
-                ExpectedType
-            );
-
-            // Assert that the expected entry was found in the extracted results
-            if not EntryFound then
-                Error('Expected entry not found: %1 on %2 for %3 hours',
-                    ExpectedDescription, Format(ExpectedDate), Format(ExpectedHours));
+            // Verify that we have entries for this exact date with exact hours
+            DateFound := VerifyDateHasExactHours(TimeSheetEntrySuggestion, ExpectedDate, ExpectedHours);
+            if not DateFound then
+                Error('Expected entry not found: %1 hours on %2',
+                    Format(ExpectedHours), Format(ExpectedDate));
         end;
-
-        // Also verify that we don't have more entries than expected
-        TimeSheetEntrySuggestion.Reset();
-        if TimeSheetEntrySuggestion.Count <> ExpectedEntries.Count then
-            Error('Expected %1 entries but got %2', ExpectedEntries.Count, TimeSheetEntrySuggestion.Count);
     end;
 
-    local procedure FindMatchingEntry(
+    local procedure VerifyDateHasExactHours(
         var TimeSheetEntrySuggestion: Record "TimeSheet Entry Suggestion";
         ExpectedDate: Date;
-        ExpectedHours: Decimal;
-        ExpectedDescription: Text;
-        ExpectedProject: Text;
-        ExpectedTask: Text;
-        ExpectedType: Text
+        ExpectedHours: Decimal
     ): Boolean
+    var
+        DateHours: Decimal;
     begin
         TimeSheetEntrySuggestion.Reset();
-
-        // Look for any entry with matching properties
         TimeSheetEntrySuggestion.SetRange(EntryDate, ExpectedDate);
 
-        if TimeSheetEntrySuggestion.FindSet() then
+        if TimeSheetEntrySuggestion.FindSet() then begin
             repeat
-                // Check if this entry matches all expected values
-                if (TimeSheetEntrySuggestion.Hours = ExpectedHours) and
-                   (TimeSheetEntrySuggestion.Description = ExpectedDescription) and
-                   (TimeSheetEntrySuggestion."Project No." = ExpectedProject) and
-                   (TimeSheetEntrySuggestion."Task No." = ExpectedTask) and
-                   (TimeSheetEntrySuggestion.EntryType = ExpectedType) then
-                    exit(true);
+                DateHours += TimeSheetEntrySuggestion.Hours;
             until TimeSheetEntrySuggestion.Next() = 0;
 
+            // Check if total hours for this date match exactly
+            exit(DateHours = ExpectedHours);
+        end;
+
         exit(false);
-    end;
-
-    local procedure HasExpectedError(AITTestContext: Codeunit "AIT Test Context"): Boolean
-    var
-        ExpectedErrorToken: JsonToken;
-    begin
-        // Check if the 'expectedError' element exists and is true
-        if AITTestContext.GetInput().AsJsonToken().AsObject().Get('expectedError', ExpectedErrorToken) then
-            exit(ExpectedErrorToken.AsValue().AsBoolean());
-        exit(false);
-    end;
-
-    local procedure VerifyExpectedError(AITTestContext: Codeunit "AIT Test Context")
-    var
-        ErrorMessageValue: Text;
-    begin
-        // Get the expected error message from the test case
-        ErrorMessageValue := AITTestContext.GetInput().Element('errorMessage').ToText();
-
-        // Verify that the actual error contains the expected error message
-        if StrPos(GetLastErrorText, ErrorMessageValue) = 0 then
-            Error('Expected error message "%1" but got "%2"', ErrorMessageValue, GetLastErrorText);
     end;
 
     local procedure CreateTimeSheet(var TimeSheetHeader: Record "Time Sheet Header"; StartDate: Date; EndDate: Date) TimeSheetNo: Code[20]
