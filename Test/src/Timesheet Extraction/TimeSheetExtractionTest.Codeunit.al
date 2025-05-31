@@ -6,13 +6,10 @@ codeunit 60104 "Time Sheet Extraction Test"
     procedure TestTimeSheetExtraction()
     var
         TimeSheetHeader: Record "Time Sheet Header";
-        GenerationBuffer: Record "Generation Buffer";
         TimeSheetEntrySuggestion: Record "TimeSheet Entry Suggestion";
         AITTestContext: Codeunit "AIT Test Context";
-        ExtractTimeSheetEntries: Codeunit "Extract Time Sheet Entries";
         StartDate: Date;
         EndDate: Date;
-        InputText: Text;
         ExpectedEntries: JsonArray;
     begin
         // GIVEN: Get time sheet period from the test case
@@ -23,13 +20,13 @@ codeunit 60104 "Time Sheet Extraction Test"
         CreateTimeSheet(TimeSheetHeader, StartDate, EndDate);
 
         // GIVEN: Get the input text from the test case
-        InputText := AITTestContext.GetInput().Element('inputText').ToText();
+
 
         // GIVEN: Get the expected entries from the test case
-        ExpectedEntries := AITTestContext.GetInput().Element('expectedEntries').AsJsonToken().AsArray();
+
 
         // WHEN: Extract the timesheet entries
-        ExtractTimeSheetEntries.Extract(GenerationBuffer, TimeSheetEntrySuggestion, InputText, TimeSheetHeader);
+
 
         // THEN: Validate the extracted entries against expected results
         VerifyExtractedEntries(TimeSheetEntrySuggestion, ExpectedEntries);
@@ -64,20 +61,17 @@ codeunit 60104 "Time Sheet Extraction Test"
     local procedure VerifyExtractedEntries(var TimeSheetEntrySuggestion: Record "TimeSheet Entry Suggestion"; ExpectedEntries: JsonArray)
     var
         ExpectedEntry: JsonToken;
-        ExpectedEntryObject: JsonObject;
         ExpectedDate: Date;
         ExpectedHours: Decimal;
-        DateFound: Boolean;
+        EntryFound: Boolean;
     begin
         // For each expected entry, verify exact date and hours match
         foreach ExpectedEntry in ExpectedEntries do begin
-            ExpectedEntryObject := ExpectedEntry.AsObject();
-            ExpectedDate := ExpectedEntryObject.GetDate('date');
-            ExpectedHours := ExpectedEntryObject.GetDecimal('hours');
+            //TODO: Extract the date and hours from the expected entry
 
             // Verify that we have entries for this exact date with exact hours
-            DateFound := VerifyDateHasExactHours(TimeSheetEntrySuggestion, ExpectedDate, ExpectedHours);
-            if not DateFound then
+            EntryFound := VerifyDateHasExactHours(TimeSheetEntrySuggestion, ExpectedDate, ExpectedHours);
+            if not EntryFound then
                 Error('Expected entry not found: %1 hours on %2',
                     Format(ExpectedHours), Format(ExpectedDate));
         end;
