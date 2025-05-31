@@ -1,13 +1,13 @@
-codeunit 50101 "Extract Time Sheet Entries"
+codeunit 50102 "Propose Time Sheet Entries"
 {
     /// <summary>
-    /// Extracts time sheet entries from a description using the LLM.
+    /// Proposes time sheet entries based on a historic time sheets.
     /// </summary>
-    /// <param name="GenerationBuffer">The generation buffer to save the input text and track generation history.</param>
-    /// <param name="TimeSheetEntrySuggestion">The record to store the generated time sheet entry suggestions.</param>
-    /// <param name="InputText">The description of the time spent that will be parsed into entries.</param>
+    /// <param name="GenerationBuffer">The generation buffer to save the input text.</param>
+    /// <param name="InputText">The description of the time spent.</param>
     /// <param name="TimeSheet">The time sheet header containing date constraints for the entries.</param>
-    procedure Extract(
+    /// <returns>The time sheet entries as a JSON array.</returns>
+    procedure Propose(
         var GenerationBuffer: Record "Generation Buffer";
         var TimeSheetEntrySuggestion: Record "TimeSheet Entry Suggestion";
         InputText: Text;
@@ -19,25 +19,26 @@ codeunit 50101 "Extract Time Sheet Entries"
     begin
         SystemPromptTxt := GetSystemPrompt(TimeSheet);
 
-        Completion := GenerateTimeEntries(SystemPromptTxt, InputText);
+        Completion := GenerateTimeEntries(SystemPromptTxt, InputText, TimeSheet."Resource No.");
         SaveGenerationHistory(GenerationBuffer, InputText);
         CreateTimeSheetSuggestions(Completion, TimeSheetEntrySuggestion, GenerationBuffer."Generation ID");
     end;
 
     [NonDebuggable]
-    local procedure GenerateTimeEntries(SystemPromptTxt: Text; InputText: Text): Text
+    local procedure GenerateTimeEntries(SystemPromptTxt: Text; InputText: Text; ResourceNo: Code[20]): Text
     var
         AzureOpenAI: Codeunit "Azure OpenAi";
         AOAIOperationResponse: Codeunit "AOAI Operation Response";
         AOAIChatCompletionParams: Codeunit "AOAI Chat Completion Params";
         AOAIChatMessages: Codeunit "AOAI Chat Messages";
+        GetHistoricTimesheetTool: Codeunit "Get Historic Timesheet Tool";
         CompletionAnswerTxt: Text;
     begin
-        if not AzureOpenAI.IsEnabled("Copilot Capability"::TimesheetEntryExtraction) then
+        if not AzureOpenAI.IsEnabled("Copilot Capability"::TimesheetHistoricProposal) then
             exit;
 
         AzureOpenAI.SetAuthorization("AOAI Model Type"::"Chat Completions", GetEndpoint(), GetDeployment(), GetSecret());
-        AzureOpenAI.SetCopilotCapability("Copilot Capability"::TimesheetEntryExtraction);
+        AzureOpenAI.SetCopilotCapability("Copilot Capability"::TimesheetHistoricProposal);
 
         AOAIChatCompletionParams.SetMaxTokens(2500);
         AOAIChatCompletionParams.SetTemperature(0);
@@ -45,6 +46,12 @@ codeunit 50101 "Extract Time Sheet Entries"
 
         AOAIChatMessages.AddSystemMessage(SystemPromptTxt);
         AOAIChatMessages.AddUserMessage(InputText);
+
+        GetHistoricTimesheetTool.SetResourceNo(ResourceNo);
+
+        AOAIChatMessages.AddTool(GetHistoricTimesheetTool);
+        AOAIChatMessages.SetToolInvokePreference("AOAI Tool Invoke Preference"::Automatic);
+        AOAIChatMessages.SetToolChoice('auto');
 
         AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);
 
@@ -135,22 +142,37 @@ codeunit 50101 "Extract Time Sheet Entries"
 
     local procedure GetSystemPrompt(TimeSheet: Record "Time Sheet Header") Prompt: Text
     begin
-        Prompt := @'You are a business time tracking assistant.
+        Prompt := @'You are a business time tracking assistant with access to historic timesheet data.
 
-The user will provide an unstructured description of how they spent their time. Your task is to:
-1. Break down this description into discrete work activities
+The user will provide a description of how they want to track their time, which may include:
+1. Unstructured descriptions of activities they performed
+2. Requests to suggest entries based on their historic timesheet patterns
+
+IMPORTANT: If the user mentions wanting suggestions based on past/previous/historic timesheet entries, patterns from specific time periods, or references like "past 3 weeks", "last month", "similar to last week", etc., you MUST:
+1. First call the retrieve_timesheets function to get their historic data
+2. Use that historic data to inform your suggestions
+3. Look for patterns in their past entries (projects, tasks, time allocations, descriptions)
+4. Generate suggestions that align with their historical work patterns
+
+Your task is to:
+1. Break down descriptions into discrete work activities
 2. Convert each activity into a properly formatted timesheet entry
-3. Return the entries as a JSON array
+3. When historic data is available, use it to suggest realistic projects, tasks, and time allocations
+4. Return entries as a JSON array
 
 Follow these rules:
 - Split activities into logical units of work
 - Estimate reasonable hours for each activity (0.5 - 8 hours per activity)
-- Use project names that would make sense in a business context
+- Use project names and tasks that align with historic patterns when available
+- Use realistic project names that would make sense in a business context
 - Identify appropriate tasks for each project
 - Categorize each entry (Meeting, Development, Analysis, etc.)
 - All entries must have dates between ';
         Prompt += Format(TimeSheet."Starting Date") + ' and ' + Format(TimeSheet."Ending Date") + '.';
         Prompt += @' If no date is specified, use a date within this timeframe
+
+Available tools:
+- retrieve_timesheets: Use this when users reference past timesheet entries or patterns
 
 Response format:
 {
@@ -159,7 +181,7 @@ Response format:
       "type": "Meeting|Development|Analysis|Documentation|Support|Other",
       "description": "Brief description of the activity",
       "project": "Project identifier/name",
-      "task": "Specific task within the project",
+      "task": "Specific task within the project", 
       "hours": 1.5,
       "date": "YYYY-MM-DD"
     }
@@ -186,3 +208,4 @@ Response format:
         exit(CompanialAOAISecrets.GetSecret());
     end;
 }
+

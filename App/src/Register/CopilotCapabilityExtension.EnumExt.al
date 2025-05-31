@@ -8,4 +8,8 @@ enumextension 50100 "Copilot Capability Extension" extends "Copilot Capability"
     {
         Caption = 'Summarize Timesheet Entries';
     }
+    value(50102; TimesheetHistoricProposal)
+    {
+        Caption = 'Generate Historic Proposal';
+    }
 }

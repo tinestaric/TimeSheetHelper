@@ -20,5 +20,8 @@ codeunit 50100 "Register Capability"
 
         if not CopilotCapability.IsCapabilityRegistered("Copilot Capability"::TimesheetSummarization) then
             CopilotCapability.RegisterCapability("Copilot Capability"::TimesheetSummarization, LearnMoreUrlTxt);
+
+        if not CopilotCapability.IsCapabilityRegistered("Copilot Capability"::TimesheetHistoricProposal) then
+            CopilotCapability.RegisterCapability("Copilot Capability"::TimesheetHistoricProposal, LearnMoreUrlTxt);
     end;
 }

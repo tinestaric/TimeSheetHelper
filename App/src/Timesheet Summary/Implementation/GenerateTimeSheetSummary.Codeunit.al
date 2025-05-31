@@ -3,9 +3,10 @@ codeunit 50107 "Generate TimeSheet Summary"
     /// <summary>
     /// Generates a summary of time sheet entries using the LLM.
     /// </summary>
-    /// <param name="GenerationBuffer">The generation buffer to save the input text.</param>
-    /// <param name="TimesheetSummary">The timesheet summary record to store the result.</param>
-    /// <param name="TimeSheetEntries">The time sheet entries to summarize.</param>
+    /// <param name="GenerationBuffer">The generation buffer to save the input text and track generation history.</param>
+    /// <param name="TimesheetSummary">The timesheet summary record to store the generated summary.</param>
+    /// <param name="TimeSheetLine">The time sheet lines to include in the summary generation context.</param>
+    /// <param name="InputText">Additional context or instructions for the summary generation.</param>
     procedure Generate(
         var GenerationBuffer: Record "Generation Buffer";
         var TimesheetSummary: Record "Timesheet Summary";

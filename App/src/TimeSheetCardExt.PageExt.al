@@ -22,6 +22,23 @@ pageextension 50101 "TimeSheet Card Ext" extends "Time Sheet Card"
                 end;
             }
 
+            action(CopilotTimeProposal)
+            {
+                ApplicationArea = All;
+                Caption = 'Propose with Copilot';
+                ToolTip = 'Use AI to propose time entries based on your historic timesheet patterns';
+                Image = SparkleFilled;
+
+                trigger OnAction()
+                var
+                    ProposeTimeSheetEntries: Page "Propose Time Sheet Entries";
+                begin
+                    ProposeTimeSheetEntries.SetTimeSheet(Rec);
+                    if ProposeTimeSheetEntries.RunModal() = Action::LookupOK then
+                        CurrPage.Update();
+                end;
+            }
+
             action(CopilotTimeSummary)
             {
                 ApplicationArea = All;
@@ -41,6 +58,7 @@ pageextension 50101 "TimeSheet Card Ext" extends "Time Sheet Card"
         addlast(Category_Category7)
         {
             actionref(CopilotTimeEntry_Promoted; CopilotTimeEntry) { }
+            actionref(CopilotTimeProposal_Promoted; CopilotTimeProposal) { }
             actionref(CopilotTimeSummary_Promoted; CopilotTimeSummary) { }
         }
     }
