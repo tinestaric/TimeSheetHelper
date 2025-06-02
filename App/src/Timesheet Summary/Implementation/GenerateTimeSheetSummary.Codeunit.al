@@ -103,17 +103,22 @@ codeunit 50107 "Generate TimeSheet Summary"
     begin
         TimeSheetEntriesList := ListTimeSheetEntries(TimeSheetLine);
 
-        Prompt := @'This is the first part
-of a multiline prompt.
+        Prompt := @'You are a helpful assistant that summarizes timesheet entries.
+Your task is to create a clear and concise summary of the provided timesheet entries.
 
-';
-        Prompt += 'This is where I can add some more details';
-        Prompt += @'
-And this is the second part of 
-a multiline prompt.
+Guidelines:
+- Group similar activities together
+- Highlight key accomplishments and milestones
+- Include total hours worked where relevant
+- Use professional business language
+- Keep the summary clear and easy to read
+- Format the text in a way that is easy to scan
 
-Replace this with the actual prompt
+Below are the timesheet entries to summarize. If additional instructions are provided, incorporate them into your summary.
+
+Timesheet entries:
 ';
+        Prompt += TimeSheetEntriesList;
 
         exit(Prompt);
     end;
