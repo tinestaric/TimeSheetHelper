@@ -24,6 +24,9 @@ page 50107 "Generate Timesheet Summary"
     actions
     {
         //TODO: Add Actions to generate, regenerate, cancel and accept (Ok)
+        // the generate and regenerate should call the GenerateSummary procedures
+        // the cancel should just close the page
+        // the accept should close the page and return the summary content
     }
 
     var
