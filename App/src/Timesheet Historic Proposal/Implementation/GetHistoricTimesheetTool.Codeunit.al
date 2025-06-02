@@ -5,43 +5,49 @@ codeunit 50103 "Get Historic Timesheet Tool" implements "AOAI Function"
 
     procedure GetPrompt(): JsonObject
     var
-        ToolDefinition: JsonObject;
         FunctionDefinition: JsonObject;
-        ParametersDefinition: JsonObject;
+        ToolDefinition: JsonObject;
     begin
-        // {
-        //   "name": "name_of_the_function",
-        //   "description": "description_of_the_function",
-        //   "strict": true,
-        //   "parameters": {
-        //     "type": "object",
-        //     "required": [
-        //       "parameter1",
-        //       "parameter2",
-        //       "parameter3"
-        //     ],
-        //     "properties": {
-        //       "parameter1": {
-        //         "type": "string",
-        //         "description": "Description of parameter 1"
-        //       },
-        //       "parameter2": {
-        //         "type": "string",
-        //         "description": "Description of parameter 2"
-        //       },
-        //       "parameter3": {
-        //         "type": "string",
-        //         "description": "Description of parameter 3"
-        //       }
-        //     },
-        //     "additionalProperties": false
-        //   }
-        // }
+        FunctionDefinition.ReadFrom(@'
+        {
+          "name": "name_of_the_function",
+          "description": "Description of the function. This is the description for AI to understand the function",
+          "strict": true,
+          "parameters": {
+            "type": "object",
+            "required": [
+              "parameter1",
+              "parameter2",
+              "parameter3"
+            ],
+            "properties": {
+              "parameter1": {
+                "type": "string",
+                "description": "Description of parameter 1"
+              },
+              "parameter2": {
+                "type": "string",
+                "description": "Description of parameter 2"
+              },
+              "parameter3": {
+                "type": "string",
+                "description": "Description of parameter 3"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+        ');
+
+        ToolDefinition.Add('type', 'function');
+        ToolDefinition.Add('function', FunctionDefinition);
+        exit(ToolDefinition);
     end;
 
     procedure Execute(Arguments: JsonObject): Variant
     begin
         //TODO: Take the arguments from the json object and execute some AL code with them
+        // this is where you call the CollectHistoricTimeSheets procedure and return the result
     end;
 
     procedure GetName(): Text

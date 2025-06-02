@@ -41,9 +41,9 @@ codeunit 50102 "Propose Time Sheet Entries"
 
         //TODO: Specify AOAI Chat Completion Params
 
-        //TODO: Add Prompts
+        //TODO: Add System and User Prompts
 
-        //TODO: Setup a Tool, add it to the messages and set the invoke preference
+        //TODO: Setup a Tool (call SetResourceNo), add it to the messages and set the invoke preference
 
         AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);
 
