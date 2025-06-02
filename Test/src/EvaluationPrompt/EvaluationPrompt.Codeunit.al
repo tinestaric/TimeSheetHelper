@@ -37,7 +37,6 @@ codeunit 60149 "Evaluation Prompt"
         AOAIChatCompletionParams: Codeunit "AOAI Chat Completion Params";
         AOAIChatMessages: Codeunit "AOAI Chat Messages";
         SystemPromptTxt: Text;
-        UserPromptTxt: Text;
         EvaluationResponseTxt: Text;
     begin
         if not AzureOpenAI.IsEnabled("Copilot Capability"::ContentEvaluation) then
@@ -50,11 +49,9 @@ codeunit 60149 "Evaluation Prompt"
         AOAIChatCompletionParams.SetTemperature(0);
         AOAIChatCompletionParams.SetJsonMode(true);
 
-        SystemPromptTxt := GetSystemPrompt();
-        UserPromptTxt := GetUserPrompt(Completion, ExpectedTerms);
+        SystemPromptTxt := GetSystemPrompt(Completion, ExpectedTerms);
 
         AOAIChatMessages.AddSystemMessage(SystemPromptTxt);
-        AOAIChatMessages.AddUserMessage(UserPromptTxt);
 
         AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);
 
@@ -88,7 +85,7 @@ codeunit 60149 "Evaluation Prompt"
         EvaluationResult.Insert(true);
     end;
 
-    local procedure GetSystemPrompt() Prompt: Text
+    local procedure GetSystemPrompt(Completion: Text; ExpectedTerms: Text) Prompt: Text
     begin
         Prompt := @'You are an AI evaluation assistant. Your job is to evaluate if a completion includes all expected terms or concepts.
 
@@ -98,18 +95,19 @@ Follow these rules:
 3. Be precise and thorough in your evaluation
 4. Return a JSON response with your evaluation
 
+Completion to evaluate:
+' + Completion + @'
+
+Expected terms (comma separated):
+' + ExpectedTerms + @'
+
+Please evaluate if this completion adequately addresses all the expected terms.
+
 Response format:
 {
   "success": true/false,
   "explanation": "A clear explanation of why the completion passed or failed, referencing which terms were missing if applicable"
 }';
-    end;
-
-    local procedure GetUserPrompt(Completion: Text; ExpectedTerms: Text) Prompt: Text
-    begin
-        Prompt := 'Completion to evaluate: ' + Completion + '\n\n';
-        Prompt += 'Expected terms (comma separated): ' + ExpectedTerms + '\n\n';
-        Prompt += 'Please evaluate if this completion adequately addresses all the expected terms.';
     end;
 
     local procedure GetEndpoint(): Text
