@@ -37,7 +37,6 @@ codeunit 60149 "Evaluation Prompt"
         AOAIChatCompletionParams: Codeunit "AOAI Chat Completion Params";
         AOAIChatMessages: Codeunit "AOAI Chat Messages";
         SystemPromptTxt: Text;
-        UserPromptTxt: Text;
         EvaluationResponseTxt: Text;
     begin
         if not AzureOpenAI.IsEnabled("Copilot Capability"::ContentEvaluation) then
@@ -50,11 +49,9 @@ codeunit 60149 "Evaluation Prompt"
         AOAIChatCompletionParams.SetTemperature(0);
         AOAIChatCompletionParams.SetJsonMode(true);
 
-        SystemPromptTxt := GetSystemPrompt();
-        UserPromptTxt := GetUserPrompt(Completion, ExpectedTerms);
+        SystemPromptTxt := GetSystemPrompt(Completion, ExpectedTerms);
 
         AOAIChatMessages.AddSystemMessage(SystemPromptTxt);
-        AOAIChatMessages.AddUserMessage(UserPromptTxt);
 
         AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);
 
@@ -88,17 +85,11 @@ codeunit 60149 "Evaluation Prompt"
         EvaluationResult.Insert(true);
     end;
 
-    local procedure GetSystemPrompt() Prompt: Text
+    local procedure GetSystemPrompt(Completion: Text; ExpectedTerms: Text) Prompt: Text
     begin
-        //TODO: Come up with a good evaluation system prompt
+        //TODO: Come up with a good evaluation system prompt, include the completion and the expected terms
+        // Instruct the model to evaluate the completion against the expected terms
         Prompt := @'Come up with a good evaluation system prompt';
-    end;
-
-    local procedure GetUserPrompt(Completion: Text; ExpectedTerms: Text) Prompt: Text
-    begin
-        //TODO: Come up with a good evaluation user prompt
-        // It should include the completion and the expected terms and the instruction to evaluate the completion
-        Prompt := @'Come up with a good evaluation user prompt';
     end;
 
     local procedure GetEndpoint(): Text
