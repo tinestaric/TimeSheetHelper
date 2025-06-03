@@ -13,7 +13,7 @@ page 50107 "Generate Timesheet Summary"
     {
         area(Prompt)
         {
-            // Properties to keep in mind: MultiLine, ShowCaption, InstructionalText
+            // TODO: Properties to keep in mind: MultiLine, ShowCaption, InstructionalText
         }
         area(Content)
         {
