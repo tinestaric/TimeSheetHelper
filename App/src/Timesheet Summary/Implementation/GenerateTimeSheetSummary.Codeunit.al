@@ -7,17 +7,19 @@ codeunit 50107 "Generate TimeSheet Summary"
     /// <param name="TimesheetSummary">The timesheet summary record to store the generated summary.</param>
     /// <param name="TimeSheetLine">The time sheet lines to include in the summary generation context.</param>
     /// <param name="InputText">Additional context or instructions for the summary generation.</param>
+    /// <param name="SummaryStyle">The selected summary style.</param>
     procedure Generate(
         var GenerationBuffer: Record "Generation Buffer";
         var TimesheetSummary: Record "Timesheet Summary";
         var TimeSheetLine: Record "Time Sheet Line";
-        InputText: Text
+        InputText: Text;
+        SummaryStyle: Enum "Summary Style"
     )
     var
         Completion: Text;
         SystemPromptTxt: Text;
     begin
-        SystemPromptTxt := GetSystemPrompt(TimeSheetLine);
+        SystemPromptTxt := GetSystemPrompt(TimeSheetLine, SummaryStyle);
 
         Completion := GenerateSummary(SystemPromptTxt, InputText);
         //Only for study purposes with reasoning models
@@ -97,11 +99,22 @@ codeunit 50107 "Generate TimeSheet Summary"
         GenerationBuffer.Insert(true);
     end;
 
-    local procedure GetSystemPrompt(var TimeSheetLine: Record "Time Sheet Line") Prompt: Text
+    local procedure GetSystemPrompt(var TimeSheetLine: Record "Time Sheet Line"; SummaryStyle: Enum "Summary Style") Prompt: Text
     var
         TimeSheetEntriesList: Text;
+        StyleInstruction: Text;
     begin
         TimeSheetEntriesList := ListTimeSheetEntries(TimeSheetLine);
+
+        // Set style-specific instructions
+        case SummaryStyle of
+            SummaryStyle::BulletPoints:
+                StyleInstruction := 'Format your summary as bullet points, with each major accomplishment or project as a separate bullet point.';
+            SummaryStyle::ShortParagraph:
+                StyleInstruction := 'Create a concise summary in 1-2 short paragraphs.';
+            SummaryStyle::LongParagraph:
+                StyleInstruction := 'Create a detailed summary in 3-5 comprehensive paragraphs with more context and detail.';
+        end;
 
         Prompt := @'You are a business time tracking assistant.
 
@@ -112,13 +125,14 @@ Below is a list of time sheet entries:
         Prompt += @'
 
 Your task is to:
-1. Create a concise summary of the work completed
+1. Create a summary of the work completed
 2. Group activities by project when possible
 3. Highlight key accomplishments
-4. Format the summary in a professional style suitable for reporting to management
+4. ';
+        Prompt += StyleInstruction;
+        Prompt += @'
 
 Your summary should:
-- Be between 3-5 paragraphs
 - Avoid unnecessary details while capturing the essence of the work
 - Use professional business language
 - Be written in the first person

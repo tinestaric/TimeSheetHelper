@@ -16,7 +16,6 @@ page 50107 "Generate Timesheet Summary"
             field(SummaryStyles; SummaryStyles)
             {
                 Caption = 'Summary Styles';
-                OptionCaption = 'Bullet Points,Short Paragraph,Long Paragraph';
                 ToolTip = 'Select the summary style for your summary';
             }
         }
@@ -127,7 +126,7 @@ page 50107 "Generate Timesheet Summary"
     var
         TimeSheetLine: Record "Time Sheet Line";
         TimesheetSummary: Record "Timesheet Summary";
-        SummaryStyles: Option BulletPoints,ShortParagraph,LongParagraph;
+        SummaryStyles: Enum "Summary Style";
         TimeSheetNo: Code[20];
         InstructionsInput: Text;
         SummaryContent: Text;
@@ -152,7 +151,7 @@ page 50107 "Generate Timesheet Summary"
         if not TimeSheetLine.FindSet() then
             Error('No timesheet entries found for the selected timesheet');
 
-        GenerateTimeSheetSummary.Generate(Rec, TimesheetSummary, TimeSheetLine, InstructionsInput);
+        GenerateTimeSheetSummary.Generate(Rec, TimesheetSummary, TimeSheetLine, InstructionsInput, SummaryStyles);
 
         LoadSummary();
     end;
