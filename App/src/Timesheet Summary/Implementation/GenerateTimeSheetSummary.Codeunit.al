@@ -27,7 +27,7 @@ codeunit 50107 "Generate TimeSheet Summary"
     end;
 
     [NonDebuggable]
-    local procedure GenerateSummary(SystemPromptTxt: Text; TimeSheetEntries: Text): Text
+    local procedure GenerateSummary(SystemPromptTxt: Text; CustomInput: Text): Text
     var
         AzureOpenAI: Codeunit "Azure OpenAi";
         AOAIOperationResponse: Codeunit "AOAI Operation Response";
@@ -45,7 +45,7 @@ codeunit 50107 "Generate TimeSheet Summary"
         AOAIChatCompletionParams.SetTemperature(1);
 
         AOAIChatMessages.AddSystemMessage(SystemPromptTxt);
-        AOAIChatMessages.AddUserMessage(TimeSheetEntries);
+        AOAIChatMessages.AddUserMessage(CustomInput);
 
         AzureOpenAI.GenerateChatCompletion(AOAIChatMessages, AOAIChatCompletionParams, AOAIOperationResponse);
 
