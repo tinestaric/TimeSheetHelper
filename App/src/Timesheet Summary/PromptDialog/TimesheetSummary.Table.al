@@ -41,7 +41,8 @@ table 50106 "Timesheet Summary"
     begin
         CalcFields(Content);
         Content.CreateInStream(InStream, TextEncoding::UTF8);
-        InStream.ReadText(ContentText);
+        while not InStream.EOS do
+            InStream.ReadText(ContentText);
         exit(ContentText);
     end;
 }
