@@ -38,11 +38,14 @@ table 50106 "Timesheet Summary"
     var
         InStream: InStream;
         ContentText: Text;
+        ResponseMessage: Text;
     begin
         CalcFields(Content);
         Content.CreateInStream(InStream, TextEncoding::UTF8);
-        while not InStream.EOS do
+        while not InStream.EOS do begin
             InStream.ReadText(ContentText);
-        exit(ContentText);
+            ResponseMessage += ContentText + '\';
+        end;
+        exit(ResponseMessage);
     end;
 }
