@@ -1,7 +1,6 @@
 tests:
   - scenario: basic_single_project
     description: Basic timesheet with single project entries
-    testName: Single Project Basic Summary
     timeSheetEntries:
       - type: Job
         description: Software Development
@@ -24,7 +23,6 @@ tests:
 
   - scenario: multiple_projects
     description: Timesheet with multiple projects
-    testName: Multiple Projects Summary
     timeSheetEntries:
       - type: Job
         description: Project A - UI Development
@@ -57,7 +55,6 @@ tests:
 
   - scenario: mixed_work_types
     description: Timesheet with mixed work types
-    testName: Mixed Work Types Summary
     timeSheetEntries:
       - type: Job
         description: Development
@@ -93,7 +90,6 @@ tests:
 
   - scenario: empty_timesheet
     description: Empty timesheet entries
-    testName: Empty Timesheet Summary
     timeSheetEntries: []
     expectedSummaryContains:
       - no entries
@@ -101,7 +97,6 @@ tests:
 
   - scenario: with_custom_instructions
     description: Timesheet with custom instructions
-    testName: Custom Instructions Summary
     timeSheetEntries:
       - type: Job
         description: Feature Implementation
@@ -131,7 +126,6 @@ tests:
 
   - scenario: long_timesheet
     description: Timesheet with many entries over two weeks
-    testName: Long Timesheet Summary
     timeSheetEntries:
       - type: Job
         description: Backend Development
@@ -202,7 +196,6 @@ tests:
 
   - scenario: varying_quantities
     description: Timesheet with varying work quantities
-    testName: Varying Quantities Summary
     timeSheetEntries:
       - type: Job
         description: Project Planning

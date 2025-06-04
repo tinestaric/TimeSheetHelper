@@ -5,7 +5,6 @@ tests:
       startDate: "2023-05-01"
       endDate: "2023-05-07"
     inputText: "I spent 4 hours on coding the login functionality on Tuesday, then 2 hours in team meetings discussing project roadmap on Wednesday. Thursday I worked 6 hours on documentation."
-    testName: Basic Timesheet Extraction
     expectedEntries:
       - date: "2023-05-02"
         hours: 4
@@ -20,7 +19,6 @@ tests:
       startDate: "2023-05-08"
       endDate: "2023-05-14"
     inputText: "This week I worked on several projects. I spent Monday morning (4h) on the CRM integration and the afternoon (4h) fixing bugs on the reporting dashboard. Tuesday was 8 hours of client meetings for the new mobile app project. Wednesday and Thursday I worked on mobile app wireframes, about 6 hours each day. Friday morning was a 2-hour retrospective meeting and 6 hours of sprint planning for next week."
-    testName: Multiple Projects Extraction
     expectedEntries:
       - date: "2023-05-08"
         hours: 8
@@ -39,7 +37,6 @@ tests:
       startDate: "2023-05-15"
       endDate: "2023-05-21"
     inputText: "This week I spent 10 hours on database optimization, 8 hours on API development, 6 hours in client meetings, 4 hours on documentation, and 12 hours fixing critical bugs in the payment processing system."
-    testName: No Dates Specified Extraction
     expectedEntries:
       - date: "2023-05-15"
         hours: 8
@@ -58,7 +55,6 @@ tests:
       startDate: "2023-05-22"
       endDate: "2023-05-28"
     inputText: "Busy week working on the project. Lots of meetings and coding. Some documentation work too."
-    testName: Vague Description Extraction
     expectedEntries:
       - date: "2023-05-22"
         hours: 4
@@ -77,7 +73,6 @@ tests:
       startDate: "2023-05-29"
       endDate: "2023-06-04"
     inputText: "Monday: 8:00-10:30 working on user authentication bug (#1234), 11:00-12:00 team standup, 13:00-17:00 implementing new dashboard features.\nTuesday: 8:00-12:00 code review for PR #567, 13:00-15:00 architecture planning meeting for v2.0, 15:30-17:00 helping QA with test plans.\nWednesday: Full day (8h) at client site conducting user training.\nThursday: 8:00-12:00 implementing feedback from client, 13:00-15:00 weekly sprint meeting, 15:30-17:00 documenting new features.\nFriday: 8:00-12:00 fixing regression bugs, 13:00-16:00 peer programming with junior developer."
-    testName: Detailed Timesheet Extraction
     expectedEntries:
       - date: "2023-05-29"
         hours: 7.5
@@ -96,7 +91,6 @@ tests:
       startDate: "2023-06-05"
       endDate: "2023-06-11"
     inputText: "This week was varied. Monday I had sales support meetings (3h) and worked on competitive analysis (5h). Tuesday I spent time troubleshooting customer issues (6h) and documenting the solutions (2h). Wednesday I conducted a training session for new team members (4h) and prepared training materials (4h). Thursday involved UI design reviews (3h) and creating wireframes for new features (5h). Friday I worked on the quarterly business report (4h) and had a strategy meeting with executives (4h)."
-    testName: Mixed Work Types Extraction
     expectedEntries:
       - date: "2023-06-05"
         hours: 8
@@ -115,7 +109,6 @@ tests:
       startDate: "2023-06-12"
       endDate: "2023-06-18"
     inputText: "Early in the week I worked on the database migration (about 10 hours total). Mid-week was mostly client meetings and some bug fixing (around 8 hours combined). At the end of the week I focused on performance optimization which took about 12 hours."
-    testName: Ambiguous Dates Extraction
     expectedEntries:
       - date: "2023-06-12"
         hours: 5
