@@ -20,3 +20,35 @@ tests:
     expectedSummaryContains:
       - software development
       - 23.5 hours
+
+  - scenario: multiple_projects
+    description: Timesheet with multiple projects
+    timeSheetEntries:
+      - type: Job
+        description: Project A - UI Development
+        workTypeCode: DEV
+        date: "2023-05-01"
+        quantity: 4
+      - type: Job
+        description: Project B - API Integration
+        workTypeCode: DEV
+        date: "2023-05-01"
+        quantity: 4
+      - type: Job
+        description: Project A - UI Testing
+        workTypeCode: TEST
+        date: "2023-05-02"
+        quantity: 3.5
+      - type: Job
+        description: Project B - Documentation
+        workTypeCode: DOC
+        date: "2023-05-02"
+        quantity: 4
+      - type: Job
+        description: Project C - Client Meeting
+        workTypeCode: MEET
+        date: "2023-05-03"
+        quantity: 2
+    expectedSummaryContains:
+      - Three projects
+      - Software development
