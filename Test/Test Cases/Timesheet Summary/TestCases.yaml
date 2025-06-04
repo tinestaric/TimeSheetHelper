@@ -1,7 +1,6 @@
 tests:
   - scenario: basic_single_project
     description: Basic timesheet with single project entries
-    testName: Single Project Basic Summary
     timeSheetEntries:
       - type: Job
         description: Software Development
