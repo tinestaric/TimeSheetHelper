@@ -26,13 +26,13 @@ codeunit 60104 "Time Sheet Extraction Test"
 
 
         // WHEN: Extract the timesheet entries
-
-
-        // THEN: Validate the extracted entries against expected results
-        VerifyExtractedEntries(TimeSheetEntrySuggestion, ExpectedEntries);
+        
 
         // Set the output for the test with full JSON of suggestions
         AITTestContext.SetTestOutput(ConvertSuggestionsToJson(TimeSheetEntrySuggestion));
+
+        // THEN: Validate the extracted entries against expected results
+        VerifyExtractedEntries(TimeSheetEntrySuggestion, ExpectedEntries);
     end;
 
     local procedure ConvertSuggestionsToJson(var TimeSheetEntrySuggestion: Record "TimeSheet Entry Suggestion"): Text
