@@ -181,7 +181,7 @@ Response format:
 
     local procedure GetDeployment(): Text
     begin
-        exit(Format(Enum::"Companial AOAI Model"::o3));
+        exit(Format(Enum::"Companial AOAI Model"::"gpt-4.1"));
     end;
 
     local procedure GetSecret(): SecretText
