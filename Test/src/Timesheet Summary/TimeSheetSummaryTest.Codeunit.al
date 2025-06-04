@@ -32,7 +32,7 @@ codeunit 60100 "Time Sheet Summary Test"
 
         // WHEN: Generate the timesheet summary
         TimeSheetLine.SetRange("Time Sheet No.", TimeSheetNo);
-        GenerateTimeSheetSummary.Generate(GenerationBuffer, TimesheetSummary, TimeSheetLine, CustomInstructions);
+        GenerateTimeSheetSummary.Generate(GenerationBuffer, TimesheetSummary, TimeSheetLine, CustomInstructions, Enum::"Summary Style"::LongParagraph);
 
         // THEN: Validate the timesheet summary against expected results
         TimesheetSummary.Get(GenerationBuffer."Generation ID");
