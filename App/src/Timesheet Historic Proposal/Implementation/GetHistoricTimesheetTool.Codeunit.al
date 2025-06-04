@@ -8,6 +8,7 @@ codeunit 50103 "Get Historic Timesheet Tool" implements "AOAI Function"
         FunctionDefinition: JsonObject;
         ToolDefinition: JsonObject;
     begin
+        //TODO: Define the function that will be used by AI to collect historic time sheets
         FunctionDefinition.ReadFrom(@'
         {
           "name": "name_of_the_function",
