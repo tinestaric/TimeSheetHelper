@@ -5,7 +5,6 @@ tests:
       startDate: "2023-05-01"
       endDate: "2023-05-07"
     inputText: "I spent 4 hours on coding the login functionality on Tuesday, then 2 hours in team meetings discussing project roadmap on Wednesday. Thursday I worked 6 hours on documentation."
-    testName: Basic Timesheet Extraction
     expectedEntries:
       - date: "2023-05-02"
         hours: 4
