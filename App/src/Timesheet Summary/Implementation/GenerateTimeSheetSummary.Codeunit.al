@@ -138,7 +138,7 @@ The user may provide preferences for how the summary should be generated. If the
 
     local procedure GetDeployment(): Text
     begin
-        exit(Format(Enum::"Companial AOAI Model"::"gpt-4o"));
+        exit(Format(Enum::"Companial AOAI Model"::"gpt-4.1"));
     end;
 
     local procedure GetSecret(): SecretText
